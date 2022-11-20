@@ -1,0 +1,5 @@
+# Default ignored files
+/shelf/
+/.idea/
+/out/
+/src/main/resources/bot-token.config
