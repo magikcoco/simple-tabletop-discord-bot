@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -39,8 +40,13 @@ public class Bot {
 
     private void addSlashCommands(){
         discordBot.updateCommands().addCommands(
-                Commands.slash("ping", "pong")
+                //ping slash command, for testing purposes
+                Commands.slash("ping", "Pong!")
+                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND)),
+                //charcreate slash command, for creating a character for the specified game
+                Commands.slash("charcreate","Create a character for the specified game")
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND))
+                        .addOption(OptionType.STRING, "game", "The game to create a character for")
         ).queue();
     }
 
