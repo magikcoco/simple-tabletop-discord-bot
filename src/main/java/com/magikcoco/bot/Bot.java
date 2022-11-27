@@ -46,7 +46,10 @@ public class Bot {
                 //charcreate slash command, for creating a character for the specified game
                 Commands.slash("charcreate","Create a character for the specified game")
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND))
-                        .addOption(OptionType.STRING, "game", "The game to create a character for")
+                        .addOption(OptionType.STRING, "game", "The TTRPG to create a character sheet for"),
+                Commands.slash("startboardgame","Start a play-by-post game")
+                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND))
+                        .addOption(OptionType.STRING, "game", "The board game to play")
         ).queue();
     }
 
