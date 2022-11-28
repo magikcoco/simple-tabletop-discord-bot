@@ -16,16 +16,18 @@ import java.nio.file.Paths;
 
 public class Bot {
 
-    private static Bot INSTANCE = new Bot();
-    private String token;
-    private JDA discordBot;
+    private static Bot INSTANCE = new Bot(); //singleton instance
+    private String token; //holds the bot token
+    private JDA discordBot; //JDA instance for connecting to discord
 
     private Bot(){
         try {
+            //load the token from file
             URL resource = getClass().getResource("/bot-token.config");
             token = new String(Files.readAllBytes(Paths.get(resource.toURI())));
-            discordBot = JDABuilder.createDefault(token) //create the bot
-                    .setActivity(Activity.playing("Tabletop Games")) //set the activity displayed under bot in server
+            //create the bot with the token
+            discordBot = JDABuilder.createDefault(token)
+                    .setActivity(Activity.playing("Tabletop Games")) //activity displayed under bot in server
                     .build(); //build the JDA
             addListeners();
             addSlashCommands();
@@ -39,22 +41,29 @@ public class Bot {
     }
 
     private void addSlashCommands(){
+        //method for adding slash commands to the bot
         discordBot.updateCommands().addCommands(
                 //ping slash command, for testing purposes
                 Commands.slash("ping", "Pong!")
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND)),
-                //charcreate slash command, for creating a character for the specified game
+                //charcreate slash command, used to initiate character creation process
                 Commands.slash("charcreate","Create a character for the specified game")
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND))
                         .addOption(OptionType.STRING, "game", "The TTRPG to create a character sheet for"),
-                Commands.slash("startboardgame","Start a play-by-post game")
+                //startboardgame slash command, used to initiate a board game
+                Commands.slash("startboardgame","Start a play-by-post board game")
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND))
-                        .addOption(OptionType.STRING, "game", "The board game to play")
+                        .addOption(OptionType.STRING, "game", "The board game to play"),
+                //startttrpg slash command, used to initiate a ttrpg
+                Commands.slash("startttrpg","Start a play-by-post ttrpg")
+                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND))
+                        .addOption(OptionType.STRING, "game", "The ttrpg to play")
         ).queue();
     }
 
     private void addListeners(){
-        discordBot.addEventListener(new SlashCommandEventListener());
+        //method for adding listeners to the bot
+        discordBot.addEventListener(new SlashCommandEventListener()); //listener for slash commands
     }
 
     /**

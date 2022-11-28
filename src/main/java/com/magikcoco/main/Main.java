@@ -7,21 +7,32 @@ import java.util.concurrent.TimeUnit;
 public class Main {
 
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
         //bot doing the work
         Bot bot = Bot.getInstance();
-        //console commands
+        //scanner for input from console
+        Scanner scanner = new Scanner(System.in);
         while(true){
-            //infinite loop
-            System.out.print("Type 'exit' to exit: ");
+            //give prompt for console commands
+            System.out.print("Type a command: ");
             String input = scanner.nextLine();
-            if(input.toLowerCase().trim().equals("exit")){
-                System.exit(0);
-            } else {
-                System.out.println("unrecognized command");
+            switch(input.toLowerCase().trim()){
+                case "exit":
+                    //exit command exits program
+                    handleExitCommand();
+                    break;
+                default:
+                    //the command was not recognized
+                    System.out.println("Unrecognized command. Commands are:");
+                    System.out.println("exit - exit the program");
+                    break;
             }
             System.out.println();
         }
+    }
+
+    private static void handleExitCommand(){
+        //exit handler
+        System.exit(0);
     }
 
 }
