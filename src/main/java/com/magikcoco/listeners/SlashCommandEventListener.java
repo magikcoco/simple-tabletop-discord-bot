@@ -1,4 +1,4 @@
-package com.magikcoco.eventlisteners;
+package com.magikcoco.listeners;
 
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -36,19 +36,23 @@ public class SlashCommandEventListener extends ListenerAdapter {
             switch (event.getOption("game").getAsString()) {
                 case "House Games":
                     //ttrpg House Games
-                    event.reply("House Games Sheet WIP").queue();
+                    event.reply("Create "+event.getOption("name").getAsString()
+                            +" for "+event.getUser().getName()+" using House Games").queue();
                     break;
                 case "Pathfinder":
                     //ttrpg Pathfinder
-                    event.reply("Pathfinder Sheet WIP").queue();
+                    event.reply("Create "+event.getOption("name").getAsString()
+                            +" for "+event.getUser().getName()+" using Pathfinder").queue();
                     break;
                 case "Shadowrun 5S":
                     //ttrpg Shadowrun
-                    event.reply("Shadowrun Sheet WIP").queue();
+                    event.reply("Create "+event.getOption("name").getAsString()
+                            +" for "+event.getUser().getName()+" using Shadowrun 5S").queue();
                     break;
                 case "Spheres of Power/Might":
                     //ttrpg Pathfinder
-                    event.reply("Spheres of Power/Might Sheet WIP").queue();
+                    event.reply("Create "+event.getOption("name").getAsString()
+                            +" for "+event.getUser().getName()+" using Spheres").queue();
                     break;
                 default:
                     //in this case the ttrpg is unsupported
@@ -57,7 +61,8 @@ public class SlashCommandEventListener extends ListenerAdapter {
                             + "House Games(WIP)\n"
                             + "Pathfinder(WIP)\n"
                             + "Shadowrun 5S(WIP)\n"
-                            + "Spheres of Power/Might(WIP)\n").queue();
+                            + "Spheres of Power/Might(WIP)\n")
+                            .queue();
                     break;
             }
         } catch(NullPointerException e){

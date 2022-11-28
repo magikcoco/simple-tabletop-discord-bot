@@ -1,6 +1,7 @@
 package com.magikcoco.bot;
 
-import com.magikcoco.eventlisteners.SlashCommandEventListener;
+import com.magikcoco.listeners.SlashCommandEventListener;
+import com.magikcoco.listeners.TextMessageListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.Permission;
@@ -49,7 +50,8 @@ public class Bot {
                 //charcreate slash command, used to initiate character creation process
                 Commands.slash("charcreate","Create a character for the specified game")
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND))
-                        .addOption(OptionType.STRING, "game", "The TTRPG to create a character sheet for"),
+                        .addOption(OptionType.STRING, "game", "The TTRPG to create a character sheet for")
+                        .addOption(OptionType.STRING, "name", "The name of the character being created"),
                 //startboardgame slash command, used to initiate a board game
                 Commands.slash("startboardgame","Start a play-by-post board game")
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND))
@@ -64,6 +66,7 @@ public class Bot {
     private void addListeners(){
         //method for adding listeners to the bot
         discordBot.addEventListener(new SlashCommandEventListener()); //listener for slash commands
+        discordBot.addEventListener(new TextMessageListener()); //listener for text messages
     }
 
     /**
