@@ -8,17 +8,21 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class TextMessageListener extends ListenerAdapter {
+    //every listener class must extend ListenerAdapter
+
+    private final String BOT_NAME = "simple-tabletop-bot"; //name of the bot
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
-        User author = event.getAuthor();
-        GuildMessageChannelUnion channel = event.getGuildChannel();
-        Message message = event.getMessage();
+        User author = event.getAuthor(); //author of the message
+        GuildMessageChannelUnion channel = event.getGuildChannel(); //channel in which the message was sent
+        Message message = event.getMessage(); //the message sent
         try{
-            if(author.getName().equals("simple-tabletop-bot") && channel.getType().toString().equals("TEXT")){
+            if(author.getName().equals(BOT_NAME) && channel.getType().toString().equals("TEXT")){
+                //if the message was sent by this bot and is in a text channel
                 String content = message.getContentRaw();
                 if(content.contains("Create")){
-                    //chargen thread
+                    //the thread should be a chargen thread
                     message.createThreadChannel(content).queue();
                 }
             }

@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class SlashCommandEventListener extends ListenerAdapter {
+    //every listener class must extend ListenerAdapter
 
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
@@ -32,6 +33,7 @@ public class SlashCommandEventListener extends ListenerAdapter {
     }
 
     private void handleCharCreate(SlashCommandInteractionEvent event){
+        //TODO: condense reply characters to 68 characters total (names are between 2 and 32 characters)
         try {
             switch (event.getOption("game").getAsString()) {
                 case "House Games":

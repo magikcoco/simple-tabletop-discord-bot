@@ -2,7 +2,6 @@ package com.magikcoco.main;
 
 import com.magikcoco.bot.Bot;
 import java.util.Scanner;
-import java.util.concurrent.TimeUnit;
 
 public class Main {
 

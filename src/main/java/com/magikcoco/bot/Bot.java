@@ -24,10 +24,10 @@ public class Bot {
     private Bot(){
         try {
             //load the token from file
-            URL resource = getClass().getResource("/bot-token.config");
-            token = new String(Files.readAllBytes(Paths.get(resource.toURI())));
+            URL resource = getClass().getResource("/bot-token.config"); //file with the token inside
+            token = new String(Files.readAllBytes(Paths.get(resource.toURI()))); //token read from file into string
             //create the bot with the token
-            discordBot = JDABuilder.createDefault(token)
+            discordBot = JDABuilder.createDefault(token) //default with token
                     .setActivity(Activity.playing("Tabletop Games")) //activity displayed under bot in server
                     .build(); //build the JDA
             addListeners();
@@ -48,6 +48,7 @@ public class Bot {
                 Commands.slash("ping", "Pong!")
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND)),
                 //charcreate slash command, used to initiate character creation process
+                //TODO: remove name option
                 Commands.slash("charcreate","Create a character for the specified game")
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND))
                         .addOption(OptionType.STRING, "game", "The TTRPG to create a character sheet for")
