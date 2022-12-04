@@ -44,15 +44,14 @@ public class Bot {
     private void addSlashCommands(){
         //method for adding slash commands to the bot
         discordBot.updateCommands().addCommands(
+                //TODO: Add autocomplete
                 //ping slash command, for testing purposes
                 Commands.slash("ping", "Pong!")
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND)),
                 //charcreate slash command, used to initiate character creation process
-                //TODO: remove name option
                 Commands.slash("charcreate","Create a character for the specified game")
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND))
-                        .addOption(OptionType.STRING, "game", "The TTRPG to create a character sheet for")
-                        .addOption(OptionType.STRING, "name", "The name of the character being created"),
+                        .addOption(OptionType.STRING, "game", "The TTRPG to create a character sheet for"),
                 //startboardgame slash command, used to initiate a board game
                 Commands.slash("startboardgame","Start a play-by-post board game")
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND))

@@ -33,37 +33,33 @@ public class SlashCommandEventListener extends ListenerAdapter {
     }
 
     private void handleCharCreate(SlashCommandInteractionEvent event){
-        //TODO: condense reply characters to 68 characters total (names are between 2 and 32 characters)
+        //all replies must be under 100 characters including name, which is always between 2 and 32 characters
         try {
             switch (event.getOption("game").getAsString()) {
                 case "House Games":
-                    //ttrpg House Games
-                    event.reply("Create "+event.getOption("name").getAsString()
-                            +" for "+event.getUser().getName()+" using House Games").queue();
+                    //ttrpg House Games, "House Games Revised Rules"
+                    event.reply("CG HGRR "+event.getUser().getAsTag()).queue();
                     break;
-                case "Pathfinder":
-                    //ttrpg Pathfinder
-                    event.reply("Create "+event.getOption("name").getAsString()
-                            +" for "+event.getUser().getName()+" using Pathfinder").queue();
+                case "Pathfinder 1e":
+                    //ttrpg Pathfinder, "Pathfinder First Edition"
+                    event.reply("CG PF1E "+event.getUser().getAsTag()).queue();
+                    break;
+                case "Pathfinder Spheres":
+                    //ttrpg Pathfinder, "Pathfinder Spheres of Power/Might"
+                    event.reply("CG PFSP "+event.getUser().getAsTag()).queue();
                     break;
                 case "Shadowrun 5S":
-                    //ttrpg Shadowrun
-                    event.reply("Create "+event.getOption("name").getAsString()
-                            +" for "+event.getUser().getName()+" using Shadowrun 5S").queue();
-                    break;
-                case "Spheres of Power/Might":
-                    //ttrpg Pathfinder
-                    event.reply("Create "+event.getOption("name").getAsString()
-                            +" for "+event.getUser().getName()+" using Spheres").queue();
+                    //ttrpg Shadowrun, "Shadowrun 5th Edition Simplified"
+                    event.reply("CG SR5S "+event.getUser().getAsTag()).queue();
                     break;
                 default:
                     //in this case the ttrpg is unsupported
                     event.reply("Unrecognized Character Sheet: " + event.getOption("game").getAsString()
                             + "\n\nList of Supported Character Sheets:\n"
                             + "House Games(WIP)\n"
-                            + "Pathfinder(WIP)\n"
-                            + "Shadowrun 5S(WIP)\n"
-                            + "Spheres of Power/Might(WIP)\n")
+                            + "Pathfinder 1e(WIP)\n"
+                            + "Pathfinder Spheres(WIP)\n"
+                            + "Shadowrun 5S(WIP)\n")
                             .queue();
                     break;
             }
@@ -96,28 +92,29 @@ public class SlashCommandEventListener extends ListenerAdapter {
             switch (event.getOption("game").getAsString()) {
                 case "House Games":
                     //ttrpg House Games
-                    event.reply("House Games AutoDM WIP").queue();
+                    event.reply("HGRR AutoDM WIP").queue();
                     break;
-                case "Pathfinder":
+                case "Pathfinder 1e":
                     //ttrpg Pathfinder
-                    event.reply("Pathfinder AutoDM WIP").queue();
+                    event.reply("PF1E AutoDM WIP").queue();
+                    break;
+                case "Pathfinder Spheres":
+                    //ttrpg Pathfinder
+                    event.reply("PFSP AutoDM WIP").queue();
                     break;
                 case "Shadowrun 5S":
                     //ttrpg Shadowrun
-                    event.reply("Shadowrun AutoDM WIP").queue();
-                    break;
-                case "Spheres of Power/Might":
-                    //ttrpg Pathfinder
-                    event.reply("Spheres of Power/Might AutoDM WIP").queue();
+                    event.reply("SR5S AutoDM WIP").queue();
                     break;
                 default:
                     //in this case the game is unsupported
                     event.reply("Unrecognized Game: " + event.getOption("game").getAsString()
                             + "\n\nList of Supported Games:\n"
                             + "House Games(WIP)\n"
-                            + "Pathfinder(WIP)\n"
-                            + "Shadowrun 5S(WIP)\n"
-                            + "Spheres of Power/Might(WIP)\n").queue();
+                            + "Pathfinder 1e(WIP)\n"
+                            + "Pathfinder Spheres(WIP)\n"
+                            + "Shadowrun 5S(WIP)\n")
+                            .queue();
                     break;
             }
         } catch (NullPointerException e){
