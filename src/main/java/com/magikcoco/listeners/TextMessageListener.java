@@ -11,7 +11,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 public class TextMessageListener extends ListenerAdapter {
     //every listener class must extend ListenerAdapter
 
-    private final String BOT_NAME = "simple-tabletop-bot#2962"; //name of the bot
+    private final String BOT_NAME = "simple-tabletop-bot#2962"; //name of the bot includes tag
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
@@ -32,7 +32,8 @@ public class TextMessageListener extends ListenerAdapter {
         }
         //react to the message
         if(!messageHandled(author, channel, message)){
-            message.reply("I didn't understand that.").queue();
+            //dont reply here
+            System.out.println("I did not handle a message in " + channel.getName() + " from " + author.getAsTag());
         }
     }
 
@@ -59,7 +60,8 @@ public class TextMessageListener extends ListenerAdapter {
                     //this is a chargen thread
                     message.createThreadChannel(content).queue();
                 }
-            } //TODO: listen for threads that this bot creates
+            }
+            //TODO: listen for threads that this bot creates
             return true;
         } catch(IllegalArgumentException e){
             System.out.println("There was an illegal argument exception trying to handle a message.");
@@ -72,8 +74,7 @@ public class TextMessageListener extends ListenerAdapter {
         } catch(InsufficientPermissionException e){
             //If this is a forum channel. You must use createForumPost(...) instead.
             System.out.println("There was an insufficient permission exception trying to handle a message.");
-        } finally {
-            return false;
         }
+        return false;
     }
 }

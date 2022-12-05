@@ -44,22 +44,21 @@ public class Bot {
     private void addSlashCommands(){
         //method for adding slash commands to the bot
         discordBot.updateCommands().addCommands(
-                //TODO: Add autocomplete
                 //ping slash command, for testing purposes
                 Commands.slash("ping", "Pong!")
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND)),
                 //charcreate slash command, used to initiate character creation process
                 Commands.slash("charcreate","Create a character for the specified game")
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND))
-                        .addOption(OptionType.STRING, "game", "The TTRPG to create a character sheet for"),
+                        .addOption(OptionType.STRING, "game", "The TTRPG to create a character sheet for",true,true),
                 //startboardgame slash command, used to initiate a board game
                 Commands.slash("startboardgame","Start a play-by-post board game")
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND))
-                        .addOption(OptionType.STRING, "game", "The board game to play"),
+                        .addOption(OptionType.STRING, "game", "The board game to play", true, true),
                 //startttrpg slash command, used to initiate a ttrpg
                 Commands.slash("startttrpg","Start a play-by-post ttrpg")
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND))
-                        .addOption(OptionType.STRING, "game", "The ttrpg to play")
+                        .addOption(OptionType.STRING, "game", "The ttrpg to play", true, true)
         ).queue();
     }
 
