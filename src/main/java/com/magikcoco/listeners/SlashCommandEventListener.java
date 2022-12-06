@@ -15,7 +15,7 @@ public class SlashCommandEventListener extends ListenerAdapter {
     //options for character sheets
     private String[] charCreateOptions = new String[]{"house games","pathfinder 1e","pathfinder spheres","shadowrun 5s"};
     //options for board game start
-    private String[] startBoardGameOptions = new String[]{"leaving earth"};
+    private String[] startBoardGameOptions = new String[]{"leaving earth", "risk", "chess"};
     //options for AutoDM
     private String[] startTtrpgOptions = new String[]{"house games","pathfinder 1e","pathfinder spheres","shadowrun 5s"};
 
@@ -108,15 +108,25 @@ public class SlashCommandEventListener extends ListenerAdapter {
     private void handleStartBoardGame(SlashCommandInteractionEvent event){
         try {
             switch (event.getOption("game").getAsString().toLowerCase()) {
+                case "chess":
+                    //board game Leaving Earth
+                    event.reply("Chess WIP").queue();
+                    break;
                 case "leaving earth":
                     //board game Leaving Earth
                     event.reply("Leaving Earth WIP").queue();
+                    break;
+                case "risk":
+                    //board game Leaving Earth
+                    event.reply("Risk WIP").queue();
                     break;
                 default:
                     //in this case the board game is not supported
                     event.reply("Unrecognized Game: " + event.getOption("game").getAsString()
                             + "\n\nList of Supported Board Games:\n"
-                            + "Leaving Earth(WIP)\n").queue();
+                            + "Chess(WIP)\n"
+                            + "Leaving Earth(WIP)\n"
+                            + "Risk(WIP)\n").queue();
                     break;
             }
         } catch(NullPointerException e){

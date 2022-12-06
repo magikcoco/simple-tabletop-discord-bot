@@ -40,18 +40,7 @@ public class TextMessageListener extends ListenerAdapter {
     private boolean messageHandled(User author, GuildMessageChannelUnion channel, Message message){
         try{
             //restrict where threads are allowed as much as possible
-            boolean threadAllowed = channel.getType().equals(ChannelType.TEXT)
-                    && !channel.getType().equals(ChannelType.GUILD_PUBLIC_THREAD)
-                    && !channel.getType().equals(ChannelType.GUILD_PRIVATE_THREAD)
-                    && !channel.getType().equals(ChannelType.GUILD_NEWS_THREAD)
-                    && !channel.getType().equals(ChannelType.PRIVATE)
-                    && !channel.getType().equals(ChannelType.FORUM)
-                    && !channel.getType().equals(ChannelType.VOICE)
-                    && !channel.getType().equals(ChannelType.STAGE)
-                    && !channel.getType().equals(ChannelType.NEWS)
-                    && !channel.getType().equals(ChannelType.GROUP)
-                    && !channel.getType().equals(ChannelType.CATEGORY)
-                    && !channel.getType().equals(ChannelType.UNKNOWN);
+            boolean threadAllowed = threadAllowedInChannel(channel);
             //checks for the message
             if(author.getAsTag().equals(BOT_NAME) && threadAllowed){
                 //if the message was sent by this bot and is in a channel where threads can be made
@@ -76,5 +65,20 @@ public class TextMessageListener extends ListenerAdapter {
             System.out.println("There was an insufficient permission exception trying to handle a message.");
         }
         return false;
+    }
+
+    private boolean threadAllowedInChannel(GuildMessageChannelUnion channel){
+        return channel.getType().equals(ChannelType.TEXT)
+                && !channel.getType().equals(ChannelType.GUILD_PUBLIC_THREAD)
+                && !channel.getType().equals(ChannelType.GUILD_PRIVATE_THREAD)
+                && !channel.getType().equals(ChannelType.GUILD_NEWS_THREAD)
+                && !channel.getType().equals(ChannelType.PRIVATE)
+                && !channel.getType().equals(ChannelType.FORUM)
+                && !channel.getType().equals(ChannelType.VOICE)
+                && !channel.getType().equals(ChannelType.STAGE)
+                && !channel.getType().equals(ChannelType.NEWS)
+                && !channel.getType().equals(ChannelType.GROUP)
+                && !channel.getType().equals(ChannelType.CATEGORY)
+                && !channel.getType().equals(ChannelType.UNKNOWN);
     }
 }
