@@ -75,19 +75,19 @@ public class SlashCommandEventListener extends ListenerAdapter {
             switch (event.getOption("game").getAsString().toLowerCase()) {
                 case "house games":
                     //ttrpg House Games, "House Games Revised Rules"
-                    event.reply("CG HGRR "+event.getUser().getAsTag()).queue();
+                    event.reply("CG HGRR "+event.getUser().getName()).queue();
                     break;
                 case "pathfinder 1e":
                     //ttrpg Pathfinder, "Pathfinder First Edition"
-                    event.reply("CG PF1E "+event.getUser().getAsTag()).queue();
+                    event.reply("CG PF1E "+event.getUser().getName()).queue();
                     break;
                 case "pathfinder spheres":
                     //ttrpg Pathfinder, "Pathfinder Spheres of Power/Might"
-                    event.reply("CG PFSP "+event.getUser().getAsTag()).queue();
+                    event.reply("CG PFSP "+event.getUser().getName()).queue();
                     break;
                 case "shadowrun 5s":
                     //ttrpg Shadowrun, "Shadowrun 5th Edition Simplified"
-                    event.reply("CG SR5S "+event.getUser().getAsTag()).queue();
+                    event.reply("CG SR5S "+event.getUser().getName()).queue();
                     break;
                 default:
                     //in this case the ttrpg is unsupported
@@ -107,6 +107,7 @@ public class SlashCommandEventListener extends ListenerAdapter {
 
     private void handleStartBoardGame(SlashCommandInteractionEvent event){
         try {
+            //TODO: edit messages usable for creating threads for starting board game autoGM
             switch (event.getOption("game").getAsString().toLowerCase()) {
                 case "chess":
                     //board game Leaving Earth
@@ -136,6 +137,7 @@ public class SlashCommandEventListener extends ListenerAdapter {
 
     private void handleStartTTRPG(SlashCommandInteractionEvent event){
         try{
+            //TODO: edit messages usable for creating threads for starting TTRPG autoGm
             switch (event.getOption("game").getAsString().toLowerCase()) {
                 case "house games":
                     //ttrpg House Games

@@ -43,6 +43,7 @@ public class Bot {
 
     private void addSlashCommands(){
         //method for adding slash commands to the bot
+        //TODO: add a /help command explaining how to use all the other commands
         discordBot.updateCommands().addCommands(
                 //ping slash command, for testing purposes
                 Commands.slash("ping", "Pong!")
