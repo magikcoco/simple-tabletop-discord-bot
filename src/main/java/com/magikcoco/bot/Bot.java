@@ -43,9 +43,10 @@ public class Bot {
 
     private void addSlashCommands(){
         //method for adding slash commands to the bot
-        //TODO: add a /help command explaining how to use all the other commands
         discordBot.updateCommands().addCommands(
                 //ping slash command, for testing purposes
+                Commands.slash("help", "get help with all the commands from this bot")
+                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND)),
                 Commands.slash("ping", "Pong!")
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND)),
                 //charcreate slash command, used to initiate character creation process

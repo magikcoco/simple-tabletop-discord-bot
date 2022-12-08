@@ -47,6 +47,13 @@ public class SlashCommandEventListener extends ListenerAdapter {
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
         //listens for slashcommands
         switch(event.getName()){
+            case "help":
+                //help slash command, for explaining purposes
+                event.reply("/ping - replies with pong\n"
+                        +"/charcreate [game] - starts a thread to create a character for the specified game\n"
+                        +"/startboardgame [game] - starts a thread for playing a board game\n"
+                        +"/startttrpg [game] - starts a thread for playing a ttrpg with\n").queue();
+                break;
             case "ping":
                 //ping slash command, for testing purposes
                 event.reply("pong").queue(); //always queue
