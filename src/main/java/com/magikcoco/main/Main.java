@@ -10,6 +10,7 @@ public class Main {
         Bot bot = Bot.getInstance();
         //scanner for input from console
         //TODO: wait until the JDA is done spitting out messages to prompt for a command
+        //TODO: switch to using input arguments for things
         Scanner scanner = new Scanner(System.in);
         while(true){
             //give prompt for console commands

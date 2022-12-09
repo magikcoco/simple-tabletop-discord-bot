@@ -114,19 +114,18 @@ public class SlashCommandEventListener extends ListenerAdapter {
 
     private void handleStartBoardGame(SlashCommandInteractionEvent event){
         try {
-            //TODO: edit messages usable for creating threads for starting board game autoGM
             switch (event.getOption("game").getAsString().toLowerCase()) {
                 case "chess":
                     //board game Leaving Earth
-                    event.reply("Chess WIP").queue();
+                    event.reply("BG CHSS 2-2").queue();
                     break;
                 case "leaving earth":
                     //board game Leaving Earth
-                    event.reply("Leaving Earth WIP").queue();
+                    event.reply("BG LEEA 1-5").queue();
                     break;
                 case "risk":
                     //board game Leaving Earth
-                    event.reply("Risk WIP").queue();
+                    event.reply("BG RISK 3-6").queue();
                     break;
                 default:
                     //in this case the board game is not supported
@@ -144,23 +143,22 @@ public class SlashCommandEventListener extends ListenerAdapter {
 
     private void handleStartTTRPG(SlashCommandInteractionEvent event){
         try{
-            //TODO: edit messages usable for creating threads for starting TTRPG autoGm
             switch (event.getOption("game").getAsString().toLowerCase()) {
                 case "house games":
                     //ttrpg House Games
-                    event.reply("HGRR AutoDM WIP").queue();
+                    event.reply("RG HGRR NDM").queue();
                     break;
                 case "pathfinder 1e":
                     //ttrpg Pathfinder
-                    event.reply("PF1E AutoDM WIP").queue();
+                    event.reply("RG PF1E NDM").queue();
                     break;
                 case "pathfinder spheres":
                     //ttrpg Pathfinder
-                    event.reply("PFSP AutoDM WIP").queue();
+                    event.reply("RG PFSP NDM").queue();
                     break;
                 case "shadowrun 5s":
                     //ttrpg Shadowrun
-                    event.reply("SR5S AutoDM WIP").queue();
+                    event.reply("RG SR5S NDM").queue();
                     break;
                 default:
                     //in this case the game is unsupported
