@@ -146,19 +146,19 @@ public class SlashCommandEventListener extends ListenerAdapter {
             switch (event.getOption("game").getAsString().toLowerCase()) {
                 case "house games":
                     //ttrpg House Games
-                    event.reply("RG HGRR NDM").queue();
+                    event.reply("RG HGRR").queue();
                     break;
                 case "pathfinder 1e":
                     //ttrpg Pathfinder
-                    event.reply("RG PF1E NDM").queue();
+                    event.reply("RG PF1E").queue();
                     break;
                 case "pathfinder spheres":
                     //ttrpg Pathfinder
-                    event.reply("RG PFSP NDM").queue();
+                    event.reply("RG PFSP").queue();
                     break;
                 case "shadowrun 5s":
                     //ttrpg Shadowrun
-                    event.reply("RG SR5S NDM").queue();
+                    event.reply("RG SR5S").queue();
                     break;
                 default:
                     //in this case the game is unsupported

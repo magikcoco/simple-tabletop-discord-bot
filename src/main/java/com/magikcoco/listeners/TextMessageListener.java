@@ -116,13 +116,8 @@ public class TextMessageListener extends ListenerAdapter {
             } else if(event.getMessage().getChannel().getName().contains("BG")){ //the thread is a board game thread
                 event.getMessage().getChannel().asThreadChannel().sendMessage("Please specify the players for this game").queue();
             } else if(event.getMessage().getChannel().getName().contains("RG")){ //the thread is a TTRPG thread
-                if(event.getMessage().getChannel().getName().contains("YDM")){ //the thread is using autoDM
-                    //TODO: AutoDM functionality
-                    event.getMessage().getChannel().asThreadChannel().sendMessage("AutoDM is a work in progress").queue();
-                } else {
-                    //TODO: Non-AutoDM functionality
-                    event.getMessage().getChannel().asThreadChannel().sendMessage("Please specify the players and DM.\n").queue();
-                }
+                event.getMessage().getChannel().asThreadChannel().sendMessage("AutoDM is disabled.\n"
+                        +"Please specify the players and DM\n").queue();
                 return true;
             }
         }
