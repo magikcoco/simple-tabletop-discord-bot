@@ -1,5 +1,6 @@
 package com.magikcoco.listeners;
 
+import com.magikcoco.bot.Bot;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
@@ -8,17 +9,22 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 import java.util.List;
+import java.util.Objects;
 
 public class TextMessageListener extends ListenerAdapter {
     //every listener class must extend ListenerAdapter
-    //TODO: move souts to log output file
+    //TODO: #7 move souts to log output file
 
-    private final String BOT_NAME = "simple-tabletop-bot#2962"; //name of the bot includes tag
+    private String botName;
+
+    public TextMessageListener() {
+        botName = Bot.getInstance().getBotName();
+    }
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         /*uncomment this section get information on whats being sent*/
-        if(event.getAuthor().getAsTag().equals(BOT_NAME)){
+        if(event.getAuthor().getAsTag().equals(botName)){
             System.out.println(event.getAuthor().getAsTag() + " sent '" + event.getMessage().getContentRaw() + "' which is of type "
                     + event.getMessage().getType().toString() + " in channel '" + event.getGuildChannel().getName() +"' which is of type "
                     + event.getGuildChannel().getType().toString());
@@ -42,7 +48,7 @@ public class TextMessageListener extends ListenerAdapter {
      */
     private boolean messageHandled(MessageReceivedEvent event){
         try{
-            if(event.getAuthor().getAsTag().equals(BOT_NAME)){
+            if(event.getAuthor().getAsTag().equals(botName)){
                 if(slashCommandThreadResponse(event)){
                     System.out.println("A slash command response that needed a thread was handled");
                 } else if(threadStarted(event)){
@@ -72,11 +78,7 @@ public class TextMessageListener extends ListenerAdapter {
                     try{
                         for(ThreadChannel tc : event.getChannel().asThreadContainer().getThreadChannels()){
                             if(tc.getName().equals(event.getMessage().getContentRaw())){
-                                try{
-                                    tc.sendMessage(event.getMessage().getInteraction().getUser().getAsMention()).queue();
-                                } catch (NullPointerException e) {
-                                    System.out.println("Null pointer exception trying to mention a user in a chargen thread");
-                                }
+                                tc.sendMessage(Objects.requireNonNull(event.getMessage().getInteraction()).getUser().getAsMention()).queue();
                             }
                         }
                         return true;
@@ -85,14 +87,13 @@ public class TextMessageListener extends ListenerAdapter {
                         System.out.println("I encountered a NullPointerException handling message '"+event.getMessage().getContentRaw()+"'");
                         return false;
                     }
-
                 } else if(content.contains("BG")){ //this is a board game thread
                     //if the board game thread already exists, check game over and participants first, and then ping
-                    //TODO: Handle a board game thread that already exists
+                    //TODO: #5 Handle a board game thread that already exists (needs #2 TODO first)
                     return true;
                 } else if(content.contains("RG")){ //this is a TTRPG thread
                     //if the TTRPG thread already exists, check game over and participants first, and then ping
-                    //TODO: Handle a TTRPG thread that already exists
+                    //TODO: #6 Handle a TTRPG thread that already exists (needs #3 TODO first)
                     return true;
                 }
             }
@@ -110,14 +111,17 @@ public class TextMessageListener extends ListenerAdapter {
                 for(Member member : event.getMessage().getGuild().getMembers()){
                     if(event.getMessage().getChannel().getName().split(" ")[2].equals(member.getEffectiveName())){
                         event.getMessage().getChannel().asThreadChannel().addThreadMember(member).queue();
+                        //TODO: #4 chargen manager
                         return true;
                     }
                 }
             } else if(event.getMessage().getChannel().getName().contains("BG")){ //the thread is a board game thread
                 event.getMessage().getChannel().asThreadChannel().sendMessage("Please specify the players for this game").queue();
+                //TODO: #2 board game manager
             } else if(event.getMessage().getChannel().getName().contains("RG")){ //the thread is a TTRPG thread
-                event.getMessage().getChannel().asThreadChannel().sendMessage("AutoDM is disabled.\n"
+                event.getMessage().getChannel().asThreadChannel().sendMessage("AutoDM is disabled\n"
                         +"Please specify the players and DM\n").queue();
+                //TODO: #3 RPG manager and autoDM
                 return true;
             }
         }

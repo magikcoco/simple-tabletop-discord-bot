@@ -11,31 +11,31 @@ import java.util.stream.Stream;
 
 public class SlashCommandEventListener extends ListenerAdapter {
     //options for character sheets
-    private String[] charCreateOptions = new String[]{"house games","pathfinder 1e","pathfinder spheres","shadowrun 5s"};
+    private String[] chargenOptions = new String[]{"house games","pathfinder 1e","pathfinder spheres","shadowrun 5s"};
     //options for board game start
-    private String[] startBoardGameOptions = new String[]{"leaving earth", "risk", "chess"};
+    private String[] startBgOptions = new String[]{"leaving earth", "risk", "chess"};
     //options for AutoDM
-    private String[] startTtrpgOptions = new String[]{"house games","pathfinder 1e","pathfinder spheres","shadowrun 5s"};
+    private String[] startRPGOptions = new String[]{"house games","pathfinder 1e","pathfinder spheres","shadowrun 5s"};
 
 
     @Override
     public void onCommandAutoCompleteInteraction(CommandAutoCompleteInteractionEvent event) {
-        if(event.getName().equals("charcreate") && event.getFocusedOption().getName().equals("game")){
-            List<Command.Choice> options = Stream.of(charCreateOptions)
-                    .filter(charCreateOptions->charCreateOptions.startsWith(event.getFocusedOption().getValue()))
-                    .map(charCreateOptions->new Command.Choice(charCreateOptions,charCreateOptions))
+        if(event.getName().equals("chargen") && event.getFocusedOption().getName().equals("game")){
+            List<Command.Choice> options = Stream.of(chargenOptions)
+                    .filter(chargenOptions->chargenOptions.startsWith(event.getFocusedOption().getValue()))
+                    .map(chargenOptions ->new Command.Choice(chargenOptions, chargenOptions))
                     .collect(Collectors.toList());
             event.replyChoices(options).queue();
-        } else if(event.getName().equals("startboardgame") && event.getFocusedOption().getName().equals("game")){
-            List<Command.Choice> options = Stream.of(startBoardGameOptions)
-                    .filter(startBoardGameOptions->startBoardGameOptions.startsWith(event.getFocusedOption().getValue()))
-                    .map(startBoardGameOptions->new Command.Choice(startBoardGameOptions,startBoardGameOptions))
+        } else if(event.getName().equals("startbg") && event.getFocusedOption().getName().equals("game")){
+            List<Command.Choice> options = Stream.of(startBgOptions)
+                    .filter(startBgOptions -> startBgOptions.startsWith(event.getFocusedOption().getValue()))
+                    .map(startBgOptions ->new Command.Choice(startBgOptions, startBgOptions))
                     .collect(Collectors.toList());
             event.replyChoices(options).queue();
-        } else if(event.getName().equals("startttrpg") && event.getFocusedOption().getName().equals("game")){
-            List<Command.Choice> options = Stream.of(startTtrpgOptions)
-                    .filter(startTtrpgOptions->startTtrpgOptions.startsWith(event.getFocusedOption().getValue()))
-                    .map(startTtrpgOptions->new Command.Choice(startTtrpgOptions,startTtrpgOptions))
+        } else if(event.getName().equals("startrpg") && event.getFocusedOption().getName().equals("game")){
+            List<Command.Choice> options = Stream.of(startRPGOptions)
+                    .filter(startRpgOptions -> startRpgOptions.startsWith(event.getFocusedOption().getValue()))
+                    .map(startRpgOptions ->new Command.Choice(startRpgOptions, startRpgOptions))
                     .collect(Collectors.toList());
             event.replyChoices(options).queue();
         }
@@ -53,17 +53,17 @@ public class SlashCommandEventListener extends ListenerAdapter {
                 //ping slash command, for testing purposes
                 handlePing(event);
                 break;
-            case "charcreate":
-                //charcreate slash command, used to initiate character creation process
-                handleCharCreate(event);
+            case "chargen":
+                //chargen slash command, used to initiate character creation process
+                handleChargen(event);
                 break;
-            case "startboardgame":
-                //startboardgame slash command, used to initiate a board game
-                handleStartBoardGame(event);
+            case "startbg":
+                //startbg slash command, used to initiate a board game
+                handleStartbg(event);
                 break;
-            case "startttrpg":
-                //startttrpg slash command, used to initiate a ttrpg
-                handleStartTTRPG(event);
+            case "startrpg":
+                //startrpg slash command, used to initiate a ttrpg
+                handleStartRPG(event);
                 break;
             default:
                 //default case is an unrecognized command
@@ -76,9 +76,9 @@ public class SlashCommandEventListener extends ListenerAdapter {
      */
     private void handleHelp(SlashCommandInteractionEvent event){
         event.reply("/ping - replies with pong\n"
-                +"/charcreate [game] - starts a thread to create a character for the specified game\n"
-                +"/startboardgame [game] - starts a thread for playing a board game\n"
-                +"/startttrpg [game] - starts a thread for playing a ttrpg with\n").queue();
+                +"/chargen [game] - starts a thread to create a character for the specified game\n"
+                +"/startbg [game] - starts a thread for playing a board game\n"
+                +"/startrpg [game] - starts a thread for playing a ttrpg with\n").queue();
     }
 
     /*
@@ -89,9 +89,9 @@ public class SlashCommandEventListener extends ListenerAdapter {
     }
 
     /*
-     * handler for charcreate command, replies with a code that gets used to create a thread by TextMessageListener
+     * handler for chargen command, replies with a code that gets used to create a thread by TextMessageListener
      */
-    private void handleCharCreate(SlashCommandInteractionEvent event){
+    private void handleChargen(SlashCommandInteractionEvent event){
         //all replies must be under 100 characters including name, which is always between 2 and 32 characters
         try {
             switch (Objects.requireNonNull(event.getOption("game")).getAsString().toLowerCase()) {
@@ -119,9 +119,9 @@ public class SlashCommandEventListener extends ListenerAdapter {
     }
 
     /*
-     * handles startboardgame command, replies with a code that gets used to create a thread by TextMessageListener
+     * handles startbg command, replies with a code that gets used to create a thread by TextMessageListener
      */
-    private void handleStartBoardGame(SlashCommandInteractionEvent event){
+    private void handleStartbg(SlashCommandInteractionEvent event){
         try {
             switch (Objects.requireNonNull(event.getOption("game")).getAsString().toLowerCase()) {
                 //board game Chess
@@ -144,9 +144,9 @@ public class SlashCommandEventListener extends ListenerAdapter {
     }
 
     /*
-     * handles startttrpg command, replies with a code that gets used to create a thread by TextMessageListener
+     * handles startrpg command, replies with a code that gets used to create a thread by TextMessageListener
      */
-    private void handleStartTTRPG(SlashCommandInteractionEvent event){
+    private void handleStartRPG(SlashCommandInteractionEvent event){
         try{
             switch (Objects.requireNonNull(event.getOption("game")).getAsString().toLowerCase()) {
                 //ttrpg House Games
