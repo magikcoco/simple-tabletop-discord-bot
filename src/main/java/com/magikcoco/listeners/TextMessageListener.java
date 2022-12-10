@@ -70,7 +70,15 @@ public class TextMessageListener extends ListenerAdapter {
                 if(content.contains("CG")){ //this is a chargen thread
                     //if the chargen thread already exists, ping the user
                     try{
-                        event.getMessage().getChannel().sendMessage(event.getMessage().getInteraction().getUser().getAsMention()).queue();
+                        for(ThreadChannel tc : event.getChannel().asThreadContainer().getThreadChannels()){
+                            if(tc.getName().equals(event.getMessage().getContentRaw())){
+                                try{
+                                    tc.sendMessage(event.getMessage().getInteraction().getUser().getAsMention()).queue();
+                                } catch (NullPointerException e) {
+                                    System.out.println("Null pointer exception trying to mention a user in a chargen thread");
+                                }
+                            }
+                        }
                         return true;
                     } catch(NullPointerException e){
                         //something went wrong here
