@@ -1,11 +1,16 @@
 package com.magikcoco.main;
 
 import com.magikcoco.bot.Bot;
+import com.magikcoco.manager.LoggingManager;
 import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
+
+    private static LoggingManager lm = LoggingManager.getInstance();
+
     public static void main(String[] args) {
+        lm.logInfo("Application Start");
         if(args.length == 1){
             try {
                 Bot bot = Bot.createBotFromToken(args[0]);
@@ -13,6 +18,7 @@ public class Main {
                 bot.addListeners();
                 Scanner scanner = new Scanner(System.in);
                 //the loop exits when the program exits when exit is called
+                lm.logInfo("Bot is created, waiting for command now");
                 //noinspection InfiniteLoopStatement
                 while (true) {
                     //give prompt for console commands
@@ -32,21 +38,23 @@ public class Main {
                     System.out.println();
                 }
             } catch (IOException e) {
+                lm.logError("IOException in main method:\n"+e.toString());
                 System.exit(1);
             }
         } else {
-            System.out.println("Needs one argument: "+'"'+"absolute/path/to/token/file"+'"');
+            lm.logInfo("Invalid number of arguments. Should have only 1 argument.");
         }
-        //scanner for input from console
         //TODO: #8 wait until any console outputs are finished before displaying command prompt (needs #7 TODO first)
     }
 
     private static void handleExitCommand(){
         //exit handler
+        lm.logInfo("Exit command called, shutting down");
         System.exit(0);
     }
 
     private static void handlePrint(){
+        lm.logInfo("Printed bot name to console. Bot name is: "+Bot.getInstance().getBotName());
         System.out.println(Bot.getInstance().getBotName());
     }
 }

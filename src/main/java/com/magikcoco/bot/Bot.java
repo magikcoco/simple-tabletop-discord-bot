@@ -2,6 +2,7 @@ package com.magikcoco.bot;
 
 import com.magikcoco.listeners.SlashCommandEventListener;
 import com.magikcoco.listeners.TextMessageListener;
+import com.magikcoco.manager.LoggingManager;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.Permission;
@@ -20,6 +21,7 @@ public class Bot {
     private static Bot BOT;
     private JDA jda; //JDA instance for connecting to discord
     private String botName;
+    private static LoggingManager lm = LoggingManager.getInstance();
 
     private Bot(String token){
         //create the bot with the token
@@ -35,10 +37,10 @@ public class Bot {
      */
     @NotNull
     public static Bot createBotFromToken(String absolutePath) throws IOException {
-        //TODO: see #1, create the bot instance from this method instead
         if(BOT == null){
             Path pathToTokenFile = Paths.get(absolutePath);
             BOT = new Bot(new String(Files.readAllBytes(pathToTokenFile)));
+            lm.logInfo("Bot created from token in file: "+absolutePath);
         }
         return BOT;
     }
@@ -47,6 +49,7 @@ public class Bot {
      * @return the instance of this bot
      */
     public static Bot getInstance(){
+
         return BOT;
     }
 
@@ -74,6 +77,7 @@ public class Bot {
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND))
                         .addOption(OptionType.STRING, "game", "The ttrpg to play", true, true)
         ).queue();
+        lm.logInfo("Slash commands have been added to the bot");
     }
 
     /**
@@ -83,12 +87,14 @@ public class Bot {
         //method for adding listeners to the bot
         jda.addEventListener(new SlashCommandEventListener()); //listener for slash commands
         jda.addEventListener(new TextMessageListener()); //listener for text messages
+        lm.logInfo("Listeners have been added to the bot");
     }
 
     /**
      * @return the name of the discord bot
      */
     public String getBotName(){
+
         return botName;
     }
 }

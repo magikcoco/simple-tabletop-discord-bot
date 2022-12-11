@@ -1,5 +1,6 @@
 package com.magikcoco.listeners;
 
+import com.magikcoco.manager.LoggingManager;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -10,6 +11,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class SlashCommandEventListener extends ListenerAdapter {
+
+    private static LoggingManager lm = LoggingManager.getInstance();
+
     //options for character sheets
     private String[] chargenOptions = new String[]{"house games","pathfinder 1e","pathfinder spheres","shadowrun 5s"};
     //options for board game start
@@ -17,6 +21,10 @@ public class SlashCommandEventListener extends ListenerAdapter {
     //options for AutoDM
     private String[] startRPGOptions = new String[]{"house games","pathfinder 1e","pathfinder spheres","shadowrun 5s"};
 
+    public SlashCommandEventListener(){
+        //default constructor just logs that its been created
+        lm.logInfo("SlashCommandEventListener has been created");
+    }
 
     @Override
     public void onCommandAutoCompleteInteraction(CommandAutoCompleteInteractionEvent event) {

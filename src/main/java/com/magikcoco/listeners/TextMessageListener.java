@@ -1,6 +1,7 @@
 package com.magikcoco.listeners;
 
 import com.magikcoco.bot.Bot;
+import com.magikcoco.manager.LoggingManager;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
@@ -12,34 +13,33 @@ import java.util.List;
 import java.util.Objects;
 
 public class TextMessageListener extends ListenerAdapter {
-    //every listener class must extend ListenerAdapter
-    //TODO: #7 move souts to log output file
 
     private String botName;
+    private static LoggingManager lm = LoggingManager.getInstance();
 
     public TextMessageListener() {
         botName = Bot.getInstance().getBotName();
+        lm.logInfo("TextMessageListener has been created");
     }
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
-        /*uncomment this section get information on whats being sent*/
         if(event.getAuthor().getAsTag().equals(botName)){
-            System.out.println(event.getAuthor().getAsTag() + " sent '" + event.getMessage().getContentRaw() + "' which is of type "
-                    + event.getMessage().getType().toString() + " in channel '" + event.getGuildChannel().getName() +"' which is of type "
+            lm.logInfo(event.getAuthor().getAsTag() + " sent '" + event.getMessage().getContentRaw()
+                    + "' which is of type " + event.getMessage().getType().toString() + " in channel '"
+                    + event.getGuildChannel().getName() +"' which is of type "
                     + event.getGuildChannel().getType().toString());
         } else {
             //we don't have the intent for this
-            System.out.println(event.getAuthor().getAsTag() + " sent a message which is of type "
-                    + event.getMessage().getType().toString() + " in channel '" + event.getGuildChannel().getName() +"' which is of type "
-                    + event.getGuildChannel().getType().toString());
+            lm.logInfo(event.getAuthor().getAsTag() + " sent a message which is of type "
+                    + event.getMessage().getType().toString() + " in channel '" + event.getGuildChannel().getName()
+                    + "' which is of type " + event.getGuildChannel().getType().toString());
         }
-        /*uncomment this section get information on whats being sent*/
 
         //react to the message
         if(!messageHandled(event)){
             //dont reply here
-            System.out.println("I did not handle a message in " + event.getGuildChannel().getName() + " from " + event.getAuthor().getAsTag());
+            lm.logInfo("I did not handle a message in " + event.getGuildChannel().getName() + " from " + event.getAuthor().getAsTag());
         }
     }
 
@@ -50,14 +50,14 @@ public class TextMessageListener extends ListenerAdapter {
         try{
             if(event.getAuthor().getAsTag().equals(botName)){
                 if(slashCommandThreadResponse(event)){
-                    System.out.println("A slash command response that needed a thread was handled");
+                    lm.logInfo("Slash command response '"+event.getMessage().getContentRaw()+"' was handled");
                 } else if(threadStarted(event)){
-                    System.out.println("I added someone to a thread");
+                    lm.logInfo("I sent a message in a thread called "+event.getMessage().getChannel().getName());
                 }
             }
             return true;
         } catch(Exception e) {
-            e.printStackTrace();
+            lm.logError("There was an error handling an incoming message:\n"+e.toString());
         }
         return false;
     }
@@ -75,18 +75,12 @@ public class TextMessageListener extends ListenerAdapter {
             } else { //in this case the thread exists, and handling it depends on it's purpose
                 if(content.contains("CG")){ //this is a chargen thread
                     //if the chargen thread already exists, ping the user
-                    try{
-                        for(ThreadChannel tc : event.getChannel().asThreadContainer().getThreadChannels()){
-                            if(tc.getName().equals(event.getMessage().getContentRaw())){
-                                tc.sendMessage(Objects.requireNonNull(event.getMessage().getInteraction()).getUser().getAsMention()).queue();
-                            }
+                    for(ThreadChannel tc : event.getChannel().asThreadContainer().getThreadChannels()){
+                        if(tc.getName().equals(event.getMessage().getContentRaw())){
+                            tc.sendMessage(Objects.requireNonNull(event.getMessage().getInteraction()).getUser().getAsMention()).queue();
                         }
-                        return true;
-                    } catch(NullPointerException e){
-                        //something went wrong here
-                        System.out.println("I encountered a NullPointerException handling message '"+event.getMessage().getContentRaw()+"'");
-                        return false;
                     }
+                    return true;
                 } else if(content.contains("BG")){ //this is a board game thread
                     //if the board game thread already exists, check game over and participants first, and then ping
                     //TODO: #5 Handle a board game thread that already exists (needs #2 TODO first)
