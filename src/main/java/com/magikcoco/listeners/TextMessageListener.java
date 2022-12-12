@@ -1,6 +1,8 @@
 package com.magikcoco.listeners;
 
 import com.magikcoco.bot.Bot;
+import com.magikcoco.manager.ChargenManager;
+import com.magikcoco.manager.DataManager;
 import com.magikcoco.manager.LoggingManager;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
@@ -16,6 +18,7 @@ public class TextMessageListener extends ListenerAdapter {
 
     private String botName;
     private static LoggingManager lm = LoggingManager.getInstance();
+    private static DataManager dm = DataManager.getInstance();
 
     public TextMessageListener() {
         botName = Bot.getInstance().getBotName();
@@ -105,7 +108,7 @@ public class TextMessageListener extends ListenerAdapter {
                 for(Member member : event.getMessage().getGuild().getMembers()){
                     if(event.getMessage().getChannel().getName().split(" ")[2].equals(member.getEffectiveName())){
                         event.getMessage().getChannel().asThreadChannel().addThreadMember(member).queue();
-                        //TODO: #4 chargen manager
+                        dm.addActiveManager(new ChargenManager(member, event.getMessage().getChannel().asThreadChannel()));
                         return true;
                     }
                 }
