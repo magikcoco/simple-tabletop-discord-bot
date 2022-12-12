@@ -8,11 +8,13 @@ public class DataManager {
     private static final DataManager INSTANCE = new DataManager();
     private List<ChargenManager> activeChargenManagers;
     private List<BoardGameManager> activeBoardGameMangers;
+    private List<RPGManager> activeRPGMangers;
 
     private DataManager(){
         //default constructor
         activeChargenManagers = new ArrayList<>();
         activeBoardGameMangers = new ArrayList<>();
+        activeRPGMangers = new ArrayList<>();
     }
 
     public static DataManager getInstance(){
@@ -28,6 +30,10 @@ public class DataManager {
         activeBoardGameMangers.add(manager);
     }
 
+    public void addActiveManager(RPGManager manager){
+        activeRPGMangers.add(manager);
+    }
+
     public void removeActiveManager(ChargenManager manager){
         activeChargenManagers.remove(manager);
     }
@@ -36,11 +42,19 @@ public class DataManager {
         activeBoardGameMangers.remove(manager);
     }
 
+    public void removeActiveManager(RPGManager manager){
+        activeRPGMangers.remove(manager);
+    }
+
     public List<ChargenManager> getActiveChargenManagers(){
         return activeChargenManagers;
     }
 
     public List<BoardGameManager> getActiveBoardGameMangers(){
         return activeBoardGameMangers;
+    }
+
+    public List<RPGManager> getActiveRPGMangers(){
+        return activeRPGMangers;
     }
 }

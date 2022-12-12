@@ -1,10 +1,7 @@
 package com.magikcoco.listeners;
 
 import com.magikcoco.bot.Bot;
-import com.magikcoco.manager.BoardGameManager;
-import com.magikcoco.manager.ChargenManager;
-import com.magikcoco.manager.DataManager;
-import com.magikcoco.manager.LoggingManager;
+import com.magikcoco.manager.*;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
@@ -118,9 +115,7 @@ public class TextMessageListener extends ListenerAdapter {
             } else if(event.getMessage().getChannel().getName().contains("BG")){ //the thread is a board game thread
                 dm.addActiveManager(new BoardGameManager(new ArrayList<>(),event.getChannel().asThreadChannel()));
             } else if(event.getMessage().getChannel().getName().contains("RG")){ //the thread is a TTRPG thread
-                event.getMessage().getChannel().asThreadChannel().sendMessage("AutoDM is disabled\n"
-                        +"Please specify the players and DM\n").queue();
-                //TODO: #3 RPG manager and autoDM
+                dm.addActiveManager(new RPGManager(new ArrayList<>(),event.getChannel().asThreadChannel()));
                 return true;
             }
         }
