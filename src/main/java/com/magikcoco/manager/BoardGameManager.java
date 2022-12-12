@@ -10,11 +10,13 @@ public class BoardGameManager {
     private List<Member> players;
     private ThreadChannel gameThread;
     private String boardGame;
+    private boolean gameOver;
 
     public BoardGameManager(List<Member> players, ThreadChannel gameThread){
         this.players = players;
         this.gameThread = gameThread;
         boardGame = gameThread.getName().split(" ")[1];
+        gameOver = false;
         gameThread.sendMessage("/help for game commands").queue();
         lm.logInfo("New BoardGameManger in thread '"
                 +gameThread.getName()
@@ -27,6 +29,10 @@ public class BoardGameManager {
 
     public ThreadChannel getGameThread(){
         return gameThread;
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
     }
 
     //TODO: complete board game functionality

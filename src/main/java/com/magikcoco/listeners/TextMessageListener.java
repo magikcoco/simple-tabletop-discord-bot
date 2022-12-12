@@ -72,25 +72,21 @@ public class TextMessageListener extends ListenerAdapter {
         if(needsThreadResponse(event)){
             //we only want to reply to slash command responses in this case
             String content = event.getMessage().getContentRaw(); //the content of the message that caused the event
-            if(!threadAlreadyExists(event.getMessage())){ //if the thread doesnt exist create it
+            if(!content.contains("CG")){
                 event.getMessage().createThreadChannel(content).queue();
                 return true;
-            } else { //in this case the thread exists, and handling it depends on it's purpose
-                if(content.contains("CG")){ //this is a chargen thread
+            } else {
+                //we only care about it already existing if it's a chargen thread
+                if(!threadAlreadyExists(event.getMessage())){
+                    event.getMessage().createThreadChannel(content).queue();
+                    return true;
+                } else { //in this case the thread exists, and handling it depends on it's purpose
                     //if the chargen thread already exists, ping the user
                     for(ThreadChannel tc : event.getChannel().asThreadContainer().getThreadChannels()){
                         if(tc.getName().equals(event.getMessage().getContentRaw())){
                             tc.sendMessage(Objects.requireNonNull(event.getMessage().getInteraction()).getUser().getAsMention()).queue();
                         }
                     }
-                    return true;
-                } else if(content.contains("BG")){ //this is a board game thread
-                    //if the board game thread already exists, check game over and participants first, and then ping
-                    //TODO: #5 Handle a board game thread that already exists (needs #2 TODO first)
-                    return true;
-                } else if(content.contains("RG")){ //this is a TTRPG thread
-                    //if the TTRPG thread already exists, check game over and participants first, and then ping
-                    //TODO: #6 Handle a TTRPG thread that already exists (needs #3 TODO first)
                     return true;
                 }
             }
