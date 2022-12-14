@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
-    //TODO: test bot when discord is no longer down
 
     private static LoggingManager lm = LoggingManager.getInstance();
 

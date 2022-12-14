@@ -83,6 +83,7 @@ public class SlashCommandEventListener extends ListenerAdapter {
      * handler for help command, replies with list of commands
      */
     private void handleHelp(SlashCommandInteractionEvent event){
+        //TODO: help response depends on what thread you are in
         event.reply("/ping - replies with pong\n"
                 +"/chargen [game] - starts a thread to create a character for the specified game\n"
                 +"/startbg [game] - starts a thread for playing a board game\n"
