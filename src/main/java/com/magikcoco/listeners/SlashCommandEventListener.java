@@ -1,10 +1,12 @@
 package com.magikcoco.listeners;
 
-import com.magikcoco.manager.LoggingManager;
+import com.magikcoco.manager.*;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -13,6 +15,7 @@ import java.util.stream.Stream;
 public class SlashCommandEventListener extends ListenerAdapter {
 
     private static LoggingManager lm = LoggingManager.getInstance();
+    private static DataManager dm = DataManager.getInstance();
 
     //options for character sheets
     private String[] chargenOptions = new String[]{"house games","pathfinder 1e","pathfinder spheres","shadowrun 5s"};
@@ -27,7 +30,7 @@ public class SlashCommandEventListener extends ListenerAdapter {
     }
 
     @Override
-    public void onCommandAutoCompleteInteraction(CommandAutoCompleteInteractionEvent event) {
+    public void onCommandAutoCompleteInteraction(@NotNull CommandAutoCompleteInteractionEvent event) {
         if(event.getName().equals("chargen") && event.getFocusedOption().getName().equals("game")){
             List<Command.Choice> options = Stream.of(chargenOptions)
                     .filter(chargenOptions->chargenOptions.startsWith(event.getFocusedOption().getValue()))
@@ -50,7 +53,8 @@ public class SlashCommandEventListener extends ListenerAdapter {
     }
 
     @Override
-    public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
+    public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
+        //TODO: restrict commands to certain types of threads/channels/etc
         //listens for slashcommands
         switch(event.getName()){
             case "help":
@@ -82,18 +86,53 @@ public class SlashCommandEventListener extends ListenerAdapter {
     /*
      * handler for help command, replies with list of commands
      */
-    private void handleHelp(SlashCommandInteractionEvent event){
+    private void handleHelp(@NotNull SlashCommandInteractionEvent event){
         //TODO: help response depends on what thread you are in
-        event.reply("/ping - replies with pong\n"
+        //TODO: test code
+        event.deferReply().queue();
+        if(event.getChannelType().equals(ChannelType.GUILD_PUBLIC_THREAD)){
+            for(ChargenManager manager : dm.getActiveChargenManagers()){
+                if(event.getChannel().equals(manager.getChargenThread())){
+                    event.getHook().sendMessage("Commands usable in"+event.getChannel().getName()+":\n\n"
+                            +"/ping - replies with pong\n"
+                            +"other commands WIP\n").queue();
+                    return;
+                }
+            }
+            for(BoardGameManager manager : dm.getActiveBoardGameMangers()){
+                if(event.getChannel().equals(manager.getGameThread())){
+                    event.getHook().sendMessage("Commands usable in"+event.getChannel().getName()+":\n\n"
+                            +"/ping - replies with pong\n"
+                            +"other commands WIP\n").queue();
+                    return;
+                }
+            }
+            for(RPGManager manager : dm.getActiveRPGMangers()){
+                if(event.getChannel().equals(manager.getGameThread())){
+                    event.getHook().sendMessage("Commands usable in"+event.getChannel().getName()+":\n\n"
+                            +"/ping - replies with pong\n"
+                            +"other commands WIP\n").queue();
+                    return;
+                }
+            }
+        } else {
+            event.getHook().sendMessage("Commands usable in"+event.getChannel().getName()+":\n\n"
+                    +"/ping - replies with pong\n"
+                    +"/chargen [game] - starts a thread to create a character for the specified game\n"
+                    +"/startbg [game] - starts a thread for playing a board game\n"
+                    +"/startrpg [game] - starts a thread for playing a ttrpg with\n").queue();
+        }
+        /*event.reply("/ping - replies with pong\n"
                 +"/chargen [game] - starts a thread to create a character for the specified game\n"
                 +"/startbg [game] - starts a thread for playing a board game\n"
-                +"/startrpg [game] - starts a thread for playing a ttrpg with\n").queue();
+                +"/startrpg [game] - starts a thread for playing a ttrpg with\n").queue();*/
     }
 
     /*
      * handler for ping command, replies with pong
      */
-    private void handlePing(SlashCommandInteractionEvent event){
+    private void handlePing(@NotNull SlashCommandInteractionEvent event){
+
         event.reply("pong").queue();
     }
 
