@@ -54,7 +54,6 @@ public class SlashCommandEventListener extends ListenerAdapter {
 
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
-        //TODO: restrict commands to certain types of threads/channels/etc
         //listens for slashcommands
         switch(event.getName()){
             case "help":
@@ -87,13 +86,11 @@ public class SlashCommandEventListener extends ListenerAdapter {
      * handler for help command, replies with list of commands
      */
     private void handleHelp(@NotNull SlashCommandInteractionEvent event){
-        //TODO: help response depends on what thread you are in
-        //TODO: test code
-        event.deferReply().queue();
+        event.deferReply(true).queue(); //this response is an ephemeral message
         if(event.getChannelType().equals(ChannelType.GUILD_PUBLIC_THREAD)){
             for(ChargenManager manager : dm.getActiveChargenManagers()){
                 if(event.getChannel().equals(manager.getChargenThread())){
-                    event.getHook().sendMessage("Commands usable in"+event.getChannel().getName()+":\n\n"
+                    event.getHook().sendMessage("Commands usable here:\n\n"
                             +"/ping - replies with pong\n"
                             +"other commands WIP\n").queue();
                     return;
@@ -101,7 +98,7 @@ public class SlashCommandEventListener extends ListenerAdapter {
             }
             for(BoardGameManager manager : dm.getActiveBoardGameMangers()){
                 if(event.getChannel().equals(manager.getGameThread())){
-                    event.getHook().sendMessage("Commands usable in"+event.getChannel().getName()+":\n\n"
+                    event.getHook().sendMessage("Commands usable here:\n\n"
                             +"/ping - replies with pong\n"
                             +"other commands WIP\n").queue();
                     return;
@@ -109,30 +106,26 @@ public class SlashCommandEventListener extends ListenerAdapter {
             }
             for(RPGManager manager : dm.getActiveRPGMangers()){
                 if(event.getChannel().equals(manager.getGameThread())){
-                    event.getHook().sendMessage("Commands usable in"+event.getChannel().getName()+":\n\n"
+                    event.getHook().sendMessage("Commands usable here:\n\n"
                             +"/ping - replies with pong\n"
                             +"other commands WIP\n").queue();
                     return;
                 }
             }
         } else {
-            event.getHook().sendMessage("Commands usable in"+event.getChannel().getName()+":\n\n"
+            event.getHook().sendMessage("Commands usable here:\n\n"
                     +"/ping - replies with pong\n"
                     +"/chargen [game] - starts a thread to create a character for the specified game\n"
                     +"/startbg [game] - starts a thread for playing a board game\n"
                     +"/startrpg [game] - starts a thread for playing a ttrpg with\n").queue();
         }
-        /*event.reply("/ping - replies with pong\n"
-                +"/chargen [game] - starts a thread to create a character for the specified game\n"
-                +"/startbg [game] - starts a thread for playing a board game\n"
-                +"/startrpg [game] - starts a thread for playing a ttrpg with\n").queue();*/
     }
 
     /*
      * handler for ping command, replies with pong
      */
     private void handlePing(@NotNull SlashCommandInteractionEvent event){
-
+        //just a ping command
         event.reply("pong").queue();
     }
 
@@ -142,27 +135,31 @@ public class SlashCommandEventListener extends ListenerAdapter {
     private void handleChargen(SlashCommandInteractionEvent event){
         //all replies must be under 100 characters including name, which is always between 2 and 32 characters
         try {
-            switch (Objects.requireNonNull(event.getOption("game")).getAsString().toLowerCase()) {
-                //ttrpg House Games, "House Games Revised Rules"
-                case "house games" -> event.reply("CG HGRR " + event.getUser().getName()).queue();
-                //ttrpg Pathfinder, "Pathfinder First Edition"
-                case "pathfinder 1e" -> event.reply("CG PF1E " + event.getUser().getName()).queue();
-                //ttrpg Pathfinder, "Pathfinder Spheres of Power/Might"
-                case "pathfinder spheres" -> event.reply("CG PFSP " + event.getUser().getName()).queue();
-                //ttrpg Shadowrun, "Shadowrun 5th Edition Simplified"
-                case "shadowrun 5s" -> event.reply("CG SR5S " + event.getUser().getName()).queue();
-                //in this case the ttrpg is unsupported
-                default -> event.reply("Unrecognized Character Sheet: "
-                        + Objects.requireNonNull(event.getOption("game")).getAsString()
-                        + "\n\nList of Supported Character Sheets:\n"
-                        + "House Games(WIP)\n"
-                        + "Pathfinder 1e(WIP)\n"
-                        + "Pathfinder Spheres(WIP)\n"
-                        + "Shadowrun 5S(WIP)\n")
-                        .queue();
+            if(threadAllowedInChannel(event)){
+                switch (Objects.requireNonNull(event.getOption("game")).getAsString().toLowerCase()) {
+                    //ttrpg House Games, "House Games Revised Rules"
+                    case "house games" -> event.reply("CG HGRR " + event.getUser().getName()).queue();
+                    //ttrpg Pathfinder, "Pathfinder First Edition"
+                    case "pathfinder 1e" -> event.reply("CG PF1E " + event.getUser().getName()).queue();
+                    //ttrpg Pathfinder, "Pathfinder Spheres of Power/Might"
+                    case "pathfinder spheres" -> event.reply("CG PFSP " + event.getUser().getName()).queue();
+                    //ttrpg Shadowrun, "Shadowrun 5th Edition Simplified"
+                    case "shadowrun 5s" -> event.reply("CG SR5S " + event.getUser().getName()).queue();
+                    //in this case the ttrpg is unsupported
+                    default -> event.reply("Unrecognized Character Sheet: "
+                            + Objects.requireNonNull(event.getOption("game")).getAsString()
+                            + "\n\nList of Supported Character Sheets:\n"
+                            + "House Games(WIP)\n"
+                            + "Pathfinder 1e(WIP)\n"
+                            + "Pathfinder Spheres(WIP)\n"
+                            + "Shadowrun 5S(WIP)\n")
+                            .queue();
+                }
+            } else {
+                event.reply("This command is not supported in this location").setEphemeral(true).queue();
             }
         } catch(NullPointerException e){
-            event.reply("I didn't understand that").queue();
+            event.reply("I didn't understand that command").setEphemeral(true).queue();
         }
     }
 
@@ -171,23 +168,27 @@ public class SlashCommandEventListener extends ListenerAdapter {
      */
     private void handleStartbg(SlashCommandInteractionEvent event){
         try {
-            switch (Objects.requireNonNull(event.getOption("game")).getAsString().toLowerCase()) {
-                //board game Chess
-                case "chess" -> event.reply("BG CHSS 2-2").queue();
-                //board game Leaving Earth
-                case "leaving earth" -> event.reply("BG LEEA 1-5").queue();
-                //board game Risk
-                case "risk" -> event.reply("BG RISK 3-6").queue();
-                //in this case the board game is not supported
-                default -> event.reply("Unrecognized Game: "
-                        + Objects.requireNonNull(event.getOption("game")).getAsString()
-                        + "\n\nList of Supported Board Games:\n"
-                        + "Chess(WIP)\n"
-                        + "Leaving Earth(WIP)\n"
-                        + "Risk(WIP)\n").queue();
+            if(threadAllowedInChannel(event)){
+                switch (Objects.requireNonNull(event.getOption("game")).getAsString().toLowerCase()) {
+                    //board game Chess
+                    case "chess" -> event.reply("BG CHSS 2-2").queue();
+                    //board game Leaving Earth
+                    case "leaving earth" -> event.reply("BG LEEA 1-5").queue();
+                    //board game Risk
+                    case "risk" -> event.reply("BG RISK 3-6").queue();
+                    //in this case the board game is not supported
+                    default -> event.reply("Unrecognized Game: "
+                            + Objects.requireNonNull(event.getOption("game")).getAsString()
+                            + "\n\nList of Supported Board Games:\n"
+                            + "Chess(WIP)\n"
+                            + "Leaving Earth(WIP)\n"
+                            + "Risk(WIP)\n").queue();
+                }
+            } else {
+                event.reply("This command is not supported in this location").setEphemeral(true).queue();
             }
         } catch(NullPointerException e){
-            event.reply("I didn't understand that").queue();
+            event.reply("I didn't understand that command").setEphemeral(true).queue();
         }
     }
 
@@ -196,27 +197,46 @@ public class SlashCommandEventListener extends ListenerAdapter {
      */
     private void handleStartRPG(SlashCommandInteractionEvent event){
         try{
-            switch (Objects.requireNonNull(event.getOption("game")).getAsString().toLowerCase()) {
-                //ttrpg House Games
-                case "house games" -> event.reply("RG HGRR").queue();
-                //ttrpg Pathfinder
-                case "pathfinder 1e" -> event.reply("RG PF1E").queue();
-                //ttrpg Pathfinder
-                case "pathfinder spheres" -> event.reply("RG PFSP").queue();
-                //ttrpg Shadowrun
-                case "shadowrun 5s" -> event.reply("RG SR5S").queue();
-                //in this case the game is unsupported
-                default -> event.reply("Unrecognized Game: "
-                        + Objects.requireNonNull(event.getOption("game")).getAsString()
-                        + "\n\nList of Supported Games:\n"
-                        + "House Games(WIP)\n"
-                        + "Pathfinder 1e(WIP)\n"
-                        + "Pathfinder Spheres(WIP)\n"
-                        + "Shadowrun 5S(WIP)\n")
-                        .queue();
+            if(threadAllowedInChannel(event)){
+                switch (Objects.requireNonNull(event.getOption("game")).getAsString().toLowerCase()) {
+                    //ttrpg House Games
+                    case "house games" -> event.reply("RG HGRR").queue();
+                    //ttrpg Pathfinder
+                    case "pathfinder 1e" -> event.reply("RG PF1E").queue();
+                    //ttrpg Pathfinder
+                    case "pathfinder spheres" -> event.reply("RG PFSP").queue();
+                    //ttrpg Shadowrun
+                    case "shadowrun 5s" -> event.reply("RG SR5S").queue();
+                    //in this case the game is unsupported
+                    default -> event.reply("Unrecognized Game: "
+                            + Objects.requireNonNull(event.getOption("game")).getAsString()
+                            + "\n\nList of Supported Games:\n"
+                            + "House Games(WIP)\n"
+                            + "Pathfinder 1e(WIP)\n"
+                            + "Pathfinder Spheres(WIP)\n"
+                            + "Shadowrun 5S(WIP)\n")
+                            .queue();
+                }
+            } else {
+                event.reply("This command is not supported in this location").setEphemeral(true).queue();
             }
         } catch (NullPointerException e){
-            event.reply("I didn't understand that").queue();
+            event.reply("I didn't understand that command").setEphemeral(true).queue();
         }
+    }
+
+    private boolean threadAllowedInChannel(@NotNull SlashCommandInteractionEvent event){
+        return event.getChannelType().equals(ChannelType.TEXT)
+                && !event.getChannelType().equals(ChannelType.GUILD_PUBLIC_THREAD)
+                && !event.getChannelType().equals(ChannelType.GUILD_PRIVATE_THREAD)
+                && !event.getChannelType().equals(ChannelType.GUILD_NEWS_THREAD)
+                && !event.getChannelType().equals(ChannelType.PRIVATE)
+                && !event.getChannelType().equals(ChannelType.FORUM)
+                && !event.getChannelType().equals(ChannelType.VOICE)
+                && !event.getChannelType().equals(ChannelType.STAGE)
+                && !event.getChannelType().equals(ChannelType.NEWS)
+                && !event.getChannelType().equals(ChannelType.GROUP)
+                && !event.getChannelType().equals(ChannelType.CATEGORY)
+                && !event.getChannelType().equals(ChannelType.UNKNOWN);
     }
 }

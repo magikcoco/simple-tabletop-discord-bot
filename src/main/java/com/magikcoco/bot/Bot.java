@@ -59,6 +59,7 @@ public class Bot {
     public void addSlashCommands(){
         //method for adding slash commands to the bot
         jda.updateCommands().addCommands(
+                //TODO: add commands for various thread functionality
                 //chargen slash command, used to initiate character creation process
                 Commands.slash("chargen","Create a character for the specified game")
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND))
