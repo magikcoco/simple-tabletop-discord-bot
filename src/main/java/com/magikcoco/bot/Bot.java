@@ -65,10 +65,13 @@ public class Bot {
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND))
                         .addOption(OptionType.STRING, "game", "The TTRPG to create a character sheet for",true,true),
                 //ping slash command, for testing purposes
-                Commands.slash("help", "get help with all the commands from this bot")
+                Commands.slash("help", "Get help with all the commands from this bot")
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND)),
                 Commands.slash("ping", "Pong!")
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND)),
+                Commands.slash("rename", "Renames the current thread to the given name")
+                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND))
+                        .addOption(OptionType.STRING, "name", "The new name for this thread", true),
                 //startbg slash command, used to initiate a board game
                 Commands.slash("startbg","Start a play-by-post board game")
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND))

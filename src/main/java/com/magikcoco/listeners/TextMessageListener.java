@@ -140,6 +140,7 @@ public class TextMessageListener extends ListenerAdapter {
      * Checks if the given message content matches any thread titles, returns true if yes or false otherwise
      */
     private boolean threadAlreadyExists(@NotNull Message message){
+        //TODO: detect threads that already exist but have been renamed through DataManager
         String content = message.getContentRaw();
         //get a list of all the thread channels in the channel
         List<ThreadChannel> threadChannels = message.getChannel().asThreadContainer().getThreadChannels();

@@ -56,6 +56,10 @@ public class SlashCommandEventListener extends ListenerAdapter {
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         //listens for slashcommands
         switch(event.getName()){
+            case "chargen":
+                //chargen slash command, used to initiate character creation process
+                handleChargen(event);
+                break;
             case "help":
                 //help slash command, for explaining purposes
                 handleHelp(event);
@@ -64,9 +68,9 @@ public class SlashCommandEventListener extends ListenerAdapter {
                 //ping slash command, for testing purposes
                 handlePing(event);
                 break;
-            case "chargen":
-                //chargen slash command, used to initiate character creation process
-                handleChargen(event);
+            case "rename":
+                //rename slash command, for renaming threads
+                handleRename(event);
                 break;
             case "startbg":
                 //startbg slash command, used to initiate a board game
@@ -79,6 +83,40 @@ public class SlashCommandEventListener extends ListenerAdapter {
             default:
                 //default case is an unrecognized command
                 break;
+        }
+    }
+
+    /*
+     * handler for chargen command, replies with a code that gets used to create a thread by TextMessageListener
+     */
+    private void handleChargen(SlashCommandInteractionEvent event){
+        //all replies must be under 100 characters including name, which is always between 2 and 32 characters
+        try {
+            if(threadAllowedInChannel(event)){
+                switch (Objects.requireNonNull(event.getOption("game")).getAsString().toLowerCase()) {
+                    //ttrpg House Games, "House Games Revised Rules"
+                    case "house games" -> event.reply("CG HGRR " + event.getUser().getName()).queue();
+                    //ttrpg Pathfinder, "Pathfinder First Edition"
+                    case "pathfinder 1e" -> event.reply("CG PF1E " + event.getUser().getName()).queue();
+                    //ttrpg Pathfinder, "Pathfinder Spheres of Power/Might"
+                    case "pathfinder spheres" -> event.reply("CG PFSP " + event.getUser().getName()).queue();
+                    //ttrpg Shadowrun, "Shadowrun 5th Edition Simplified"
+                    case "shadowrun 5s" -> event.reply("CG SR5S " + event.getUser().getName()).queue();
+                    //in this case the ttrpg is unsupported
+                    default -> event.reply("Unrecognized Character Sheet: "
+                            + Objects.requireNonNull(event.getOption("game")).getAsString()
+                            + "\n\nList of Supported Character Sheets:\n"
+                            + "House Games(WIP)\n"
+                            + "Pathfinder 1e(WIP)\n"
+                            + "Pathfinder Spheres(WIP)\n"
+                            + "Shadowrun 5S(WIP)\n")
+                            .queue();
+                }
+            } else {
+                event.reply("This command is not supported in this location").setEphemeral(true).queue();
+            }
+        } catch(NullPointerException e){
+            event.reply("I didn't understand that command").setEphemeral(true).queue();
         }
     }
 
@@ -129,37 +167,21 @@ public class SlashCommandEventListener extends ListenerAdapter {
         event.reply("pong").queue();
     }
 
-    /*
-     * handler for chargen command, replies with a code that gets used to create a thread by TextMessageListener
-     */
-    private void handleChargen(SlashCommandInteractionEvent event){
-        //all replies must be under 100 characters including name, which is always between 2 and 32 characters
-        try {
-            if(threadAllowedInChannel(event)){
-                switch (Objects.requireNonNull(event.getOption("game")).getAsString().toLowerCase()) {
-                    //ttrpg House Games, "House Games Revised Rules"
-                    case "house games" -> event.reply("CG HGRR " + event.getUser().getName()).queue();
-                    //ttrpg Pathfinder, "Pathfinder First Edition"
-                    case "pathfinder 1e" -> event.reply("CG PF1E " + event.getUser().getName()).queue();
-                    //ttrpg Pathfinder, "Pathfinder Spheres of Power/Might"
-                    case "pathfinder spheres" -> event.reply("CG PFSP " + event.getUser().getName()).queue();
-                    //ttrpg Shadowrun, "Shadowrun 5th Edition Simplified"
-                    case "shadowrun 5s" -> event.reply("CG SR5S " + event.getUser().getName()).queue();
-                    //in this case the ttrpg is unsupported
-                    default -> event.reply("Unrecognized Character Sheet: "
-                            + Objects.requireNonNull(event.getOption("game")).getAsString()
-                            + "\n\nList of Supported Character Sheets:\n"
-                            + "House Games(WIP)\n"
-                            + "Pathfinder 1e(WIP)\n"
-                            + "Pathfinder Spheres(WIP)\n"
-                            + "Shadowrun 5S(WIP)\n")
-                            .queue();
-                }
+    private void handleRename(@NotNull SlashCommandInteractionEvent event){
+        //rename a thread if you are in one, and ephemeral reply
+        event.deferReply(true).queue();
+        try{
+            if(channelIsPublicThread(event)){
+                event.getChannel().asThreadChannel().getManager().setName(
+                        Objects.requireNonNull(event.getOption("name")).getAsString()
+                ).queue();
+                event.getHook().sendMessage("Renamed the thread to "
+                        + Objects.requireNonNull(event.getOption("name")).getAsString()).queue();
             } else {
-                event.reply("This command is not supported in this location").setEphemeral(true).queue();
+                event.getHook().sendMessage("This command is not supported in this location").queue();
             }
-        } catch(NullPointerException e){
-            event.reply("I didn't understand that command").setEphemeral(true).queue();
+        } catch(NullPointerException e) {
+            event.getHook().sendMessage("I didn't understand that command").queue();
         }
     }
 
@@ -228,6 +250,21 @@ public class SlashCommandEventListener extends ListenerAdapter {
     private boolean threadAllowedInChannel(@NotNull SlashCommandInteractionEvent event){
         return event.getChannelType().equals(ChannelType.TEXT)
                 && !event.getChannelType().equals(ChannelType.GUILD_PUBLIC_THREAD)
+                && !event.getChannelType().equals(ChannelType.GUILD_PRIVATE_THREAD)
+                && !event.getChannelType().equals(ChannelType.GUILD_NEWS_THREAD)
+                && !event.getChannelType().equals(ChannelType.PRIVATE)
+                && !event.getChannelType().equals(ChannelType.FORUM)
+                && !event.getChannelType().equals(ChannelType.VOICE)
+                && !event.getChannelType().equals(ChannelType.STAGE)
+                && !event.getChannelType().equals(ChannelType.NEWS)
+                && !event.getChannelType().equals(ChannelType.GROUP)
+                && !event.getChannelType().equals(ChannelType.CATEGORY)
+                && !event.getChannelType().equals(ChannelType.UNKNOWN);
+    }
+
+    private boolean channelIsPublicThread(@NotNull SlashCommandInteractionEvent event){
+        return event.getChannelType().equals(ChannelType.GUILD_PUBLIC_THREAD)
+                && !event.getChannelType().equals(ChannelType.TEXT)
                 && !event.getChannelType().equals(ChannelType.GUILD_PRIVATE_THREAD)
                 && !event.getChannelType().equals(ChannelType.GUILD_NEWS_THREAD)
                 && !event.getChannelType().equals(ChannelType.PRIVATE)
