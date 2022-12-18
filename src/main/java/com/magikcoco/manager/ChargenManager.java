@@ -30,4 +30,5 @@ public class ChargenManager {
     }
 
     //TODO: complete chargen functionality
+    //TODO: permanency for chargen managers
 }

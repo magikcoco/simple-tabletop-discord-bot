@@ -57,4 +57,6 @@ public class DataManager {
     public List<RPGManager> getActiveRPGMangers(){
         return activeRPGMangers;
     }
+
+    //TODO: permanency for data manager
 }

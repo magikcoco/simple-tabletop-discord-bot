@@ -36,4 +36,5 @@ public class BoardGameManager {
     }
 
     //TODO: complete board game functionality
+    //TODO: permanency for board game managers
 }

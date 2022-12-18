@@ -43,4 +43,5 @@ public class RPGManager {
     }
 
     //TODO: complete TTRPG functionality
+    //TODO: permanency for RPG managers
 }

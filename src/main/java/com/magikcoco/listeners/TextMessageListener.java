@@ -4,14 +4,12 @@ import com.magikcoco.bot.Bot;
 import com.magikcoco.manager.*;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
-import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class TextMessageListener extends ListenerAdapter {
@@ -77,18 +75,18 @@ public class TextMessageListener extends ListenerAdapter {
                 return true;
             } else {
                 //we only care about it already existing if it's a chargen thread
-                if(!threadAlreadyExists(event.getMessage())){
+                if(!chargenThreadAlreadyExists(event.getMessage())){
                     event.getMessage().createThreadChannel(content).queue();
-                    return true;
                 } else { //in this case the thread exists, and handling it depends on it's purpose
                     //if the chargen thread already exists, ping the user
-                    for(ThreadChannel tc : event.getChannel().asThreadContainer().getThreadChannels()){
-                        if(tc.getName().equals(event.getMessage().getContentRaw())){
-                            tc.sendMessage(Objects.requireNonNull(event.getMessage().getInteraction()).getUser().getAsMention()).queue();
+                    String memberName = event.getMessage().getContentRaw().split(" ")[2];
+                    for(ChargenManager manager : dm.getActiveChargenManagers()){
+                        if(manager.getCharOwner().getEffectiveName().equals(memberName)){
+                            manager.getChargenThread().sendMessage(Objects.requireNonNull(event.getMessage().getInteraction()).getUser().getAsMention()).queue();
                         }
                     }
-                    return true;
                 }
+                return true;
             }
         }
         return false;
@@ -139,18 +137,14 @@ public class TextMessageListener extends ListenerAdapter {
     /*
      * Checks if the given message content matches any thread titles, returns true if yes or false otherwise
      */
-    private boolean threadAlreadyExists(@NotNull Message message){
-        //TODO: detect threads that already exist but have been renamed through DataManager
-        String content = message.getContentRaw();
-        //get a list of all the thread channels in the channel
-        List<ThreadChannel> threadChannels = message.getChannel().asThreadContainer().getThreadChannels();
-        boolean exists = false; //is this thread already exists
-        for(ThreadChannel tc : threadChannels){ //go through all the threads
-            if(tc.getName().equals(content)){ //if the thread has the same name it already exists
-                exists = true;
+    private boolean chargenThreadAlreadyExists(@NotNull Message message){
+        String memberName = message.getContentRaw().split(" ")[2];
+        for(ChargenManager manager : dm.getActiveChargenManagers()){
+            if(manager.getCharOwner().getEffectiveName().equals(memberName)){
+                return true;
             }
         }
-        return exists;
+        return false;
     }
 
     /*
@@ -179,4 +173,6 @@ public class TextMessageListener extends ListenerAdapter {
                 && threadAllowedInChannel(event.getGuildChannel())
                 && threadResponseNeeded(event.getMessage());
     }
+
+    //TODO: listen for thread deletions
 }
