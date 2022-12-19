@@ -174,5 +174,5 @@ public class TextMessageListener extends ListenerAdapter {
                 && threadResponseNeeded(event.getMessage());
     }
 
-    //TODO: listen for thread deletions
+    //TODO: move thread responses to it's own listener
 }

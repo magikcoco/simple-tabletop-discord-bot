@@ -2,6 +2,7 @@ package com.magikcoco.bot;
 
 import com.magikcoco.listeners.SlashCommandEventListener;
 import com.magikcoco.listeners.TextMessageListener;
+import com.magikcoco.listeners.ThreadDeletionListener;
 import com.magikcoco.manager.LoggingManager;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -91,6 +92,7 @@ public class Bot {
         //method for adding listeners to the bot
         jda.addEventListener(new SlashCommandEventListener()); //listener for slash commands
         jda.addEventListener(new TextMessageListener()); //listener for text messages
+        jda.addEventListener(new ThreadDeletionListener()); //listener for channel deletions
         lm.logInfo("Listeners have been added to the bot");
     }
 
