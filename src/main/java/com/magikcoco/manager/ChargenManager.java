@@ -29,6 +29,8 @@ public class ChargenManager {
         return chargenThread;
     }
 
+    public String getChargenGame() { return chargenGame; }
+
     //TODO: complete chargen functionality
     //TODO: permanency for chargen managers
 }

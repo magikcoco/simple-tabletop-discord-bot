@@ -8,8 +8,6 @@ import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
 import java.util.Objects;
 
 public class TextMessageListener extends ListenerAdapter {
@@ -49,12 +47,8 @@ public class TextMessageListener extends ListenerAdapter {
      */
     private boolean messageHandled(MessageReceivedEvent event){
         try{
-            if(event.getAuthor().getAsTag().equals(botName)){
-                if(slashCommandThreadResponse(event)){
-                    lm.logInfo("Slash command response '"+event.getMessage().getContentRaw()+"' was handled");
-                } else if(threadStarted(event)){
-                    lm.logInfo("I sent a message in a thread called "+event.getMessage().getChannel().getName());
-                }
+            if(event.getAuthor().getAsTag().equals(botName) && slashCommandThreadResponse(event)){
+                lm.logInfo("Slash command response '"+event.getMessage().getContentRaw()+"' was handled");
             }
             return true;
         } catch(Exception e) {
@@ -70,46 +64,25 @@ public class TextMessageListener extends ListenerAdapter {
         if(needsThreadResponse(event)){
             //we only want to reply to slash command responses in this case
             String content = event.getMessage().getContentRaw(); //the content of the message that caused the event
-            if(!content.contains("CG")){
-                event.getMessage().createThreadChannel(content).queue();
-                return true;
-            } else {
-                //we only care about it already existing if it's a chargen thread
-                if(!chargenThreadAlreadyExists(event.getMessage())){
-                    event.getMessage().createThreadChannel(content).queue();
-                } else { //in this case the thread exists, and handling it depends on it's purpose
-                    //if the chargen thread already exists, ping the user
-                    String memberName = event.getMessage().getContentRaw().split(" ")[2];
+            if(content.contains("CG")){
+                //chargen thread case
+                if(chargenThreadAlreadyExists(event.getMessage())){
+                    String[] threadInfo = event.getMessage().getContentRaw().split(" ");
+                    //when response first comes this should always be:
+                    //0 is thread type code
+                    //1 is code for the game
+                    //2 is the name of the char owner
                     for(ChargenManager manager : dm.getActiveChargenManagers()){
-                        if(manager.getCharOwner().getEffectiveName().equals(memberName)){
+                        if(manager.getCharOwner().getEffectiveName().equals(threadInfo[2]) && manager.getChargenGame().equals(threadInfo[1])){
                             manager.getChargenThread().sendMessage(Objects.requireNonNull(event.getMessage().getInteraction()).getUser().getAsMention()).queue();
                         }
                     }
+                } else {
+                    event.getMessage().createThreadChannel(content).queue();
                 }
                 return true;
-            }
-        }
-        return false;
-    }
-
-    /*
-     * Handles sending a message inside a thread that was just created
-     */
-    private boolean threadStarted(@NotNull MessageReceivedEvent event){
-        if(canSendMessagesInThread(event.getMessage())){ //check if the bot can put messages in the thread
-            if(event.getMessage().getChannel().getName().contains("CG")){ //chargen thread case
-                //add a member to the thread just created
-                for(Member member : event.getMessage().getGuild().getMembers()){
-                    if(event.getMessage().getChannel().getName().split(" ")[2].equals(member.getEffectiveName())){
-                        event.getMessage().getChannel().asThreadChannel().addThreadMember(member).queue();
-                        dm.addActiveManager(new ChargenManager(member, event.getChannel().asThreadChannel()));
-                        return true;
-                    }
-                }
-            } else if(event.getMessage().getChannel().getName().contains("BG")){ //the thread is a board game thread
-                dm.addActiveManager(new BoardGameManager(new ArrayList<>(),event.getChannel().asThreadChannel()));
-            } else if(event.getMessage().getChannel().getName().contains("RG")){ //the thread is a TTRPG thread
-                dm.addActiveManager(new RPGManager(new ArrayList<>(),event.getChannel().asThreadChannel()));
+            } else if(content.contains("BG") || content.contains("RG")) {
+                event.getMessage().createThreadChannel(content).queue();
                 return true;
             }
         }
@@ -138,9 +111,14 @@ public class TextMessageListener extends ListenerAdapter {
      * Checks if the given message content matches any thread titles, returns true if yes or false otherwise
      */
     private boolean chargenThreadAlreadyExists(@NotNull Message message){
-        String memberName = message.getContentRaw().split(" ")[2];
+        String[] threadInfo = message.getContentRaw().split(" ");
+        //when response first comes this should always be:
+        //0 is thread type code
+        //1 is code for the game
+        //2 is the name of the char owner
         for(ChargenManager manager : dm.getActiveChargenManagers()){
-            if(manager.getCharOwner().getEffectiveName().equals(memberName)){
+            if(manager.getCharOwner().getEffectiveName().equals(threadInfo[2])
+                    && manager.getChargenGame().equals(threadInfo[1])){
                 return true;
             }
         }
@@ -148,31 +126,12 @@ public class TextMessageListener extends ListenerAdapter {
     }
 
     /*
-     * Checks if the message contains certain keywords that indicate a thread response is needed
-     */
-    private boolean threadResponseNeeded(@NotNull Message message){
-        String content = message.getContentRaw();
-        return content.contains("CG") || content.contains("BG") || content.contains("RG");
-    }
-
-    /*
-     * checks if the thread a message just created can have messages sent by this bot
-     */
-    private boolean canSendMessagesInThread(@NotNull Message message){
-        return message.getType().equals(MessageType.THREAD_STARTER_MESSAGE) //the message is a thread starter message
-                && message.getChannel().asThreadChannel().isJoined() //the thread is joined
-                && !message.getChannel().asThreadChannel().isLocked() //the thread is not locked
-                && !message.getChannel().asThreadChannel().isArchived(); //the thread is not archived
-    }
-
-    /*
      * checks if the message should be responded to with a thread
      */
     private boolean needsThreadResponse(@NotNull MessageReceivedEvent event){
+        String content = event.getMessage().getContentRaw();
         return event.getMessage().getType().equals(MessageType.SLASH_COMMAND)
                 && threadAllowedInChannel(event.getGuildChannel())
-                && threadResponseNeeded(event.getMessage());
+                && (content.contains("CG") || content.contains("BG") || content.contains("RG"));
     }
-
-    //TODO: move thread responses to it's own listener
 }
