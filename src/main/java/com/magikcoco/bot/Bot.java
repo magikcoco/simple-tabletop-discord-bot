@@ -66,11 +66,19 @@ public class Bot {
                 Commands.slash("chargen","Create a character for the specified game")
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND))
                         .addOption(OptionType.STRING, "game", "The TTRPG to create a character sheet for",true,true),
-                //ping slash command, for testing purposes
+                //help slash command, for displaying available commands
                 Commands.slash("help", "Get help with all the commands from this bot")
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND)),
+                //for joining the game as a game master
+                Commands.slash("joinasgm", "Join the game in this thread as the game master")
+                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND)),
+                //for joining the game as a player
+                Commands.slash("joinasplayer", "Join the game in this thread as a player")
+                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND)),
+                //ping slash command, for testing purposes
                 Commands.slash("ping", "Pong!")
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND)),
+                //rename slash command, for renaming threads
                 Commands.slash("rename", "Renames the current thread to the given name")
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND))
                         .addOption(OptionType.STRING, "name", "The new name for this thread", true),

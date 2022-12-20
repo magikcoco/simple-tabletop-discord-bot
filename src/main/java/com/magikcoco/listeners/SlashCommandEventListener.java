@@ -64,6 +64,12 @@ public class SlashCommandEventListener extends ListenerAdapter {
                 //help slash command, for explaining purposes
                 handleHelp(event);
                 break;
+            case "joinasgm":
+                handleJoinAsGM(event);
+                break;
+            case "joinasplayer":
+                handleJoinAsPlayer(event);
+                break;
             case "ping":
                 //ping slash command, for testing purposes
                 handlePing(event);
@@ -130,6 +136,7 @@ public class SlashCommandEventListener extends ListenerAdapter {
                 if(event.getChannel().equals(manager.getChargenThread())){
                     event.getHook().sendMessage("Commands usable here:\n\n"
                             +"/ping - replies with pong\n"
+                            +"/rename - renames the thread to the given name\n"
                             +"other commands WIP\n").queue();
                     return;
                 }
@@ -137,7 +144,9 @@ public class SlashCommandEventListener extends ListenerAdapter {
             for(BoardGameManager manager : dm.getActiveBoardGameMangers()){
                 if(event.getChannel().equals(manager.getGameThread())){
                     event.getHook().sendMessage("Commands usable here:\n\n"
+                            +"/joinasplayer - join the current game in this thread as a player\n"
                             +"/ping - replies with pong\n"
+                            +"/rename - renames the thread to the given name\n"
                             +"other commands WIP\n").queue();
                     return;
                 }
@@ -145,7 +154,10 @@ public class SlashCommandEventListener extends ListenerAdapter {
             for(RPGManager manager : dm.getActiveRPGMangers()){
                 if(event.getChannel().equals(manager.getGameThread())){
                     event.getHook().sendMessage("Commands usable here:\n\n"
+                            +"/joinasgm - join the current game in this thread as the gm\n"
+                            +"/joinasplayer - join the current game in this thread as a player\n"
                             +"/ping - replies with pong\n"
+                            +"/rename - renames the thread to the given name\n"
                             +"other commands WIP\n").queue();
                     return;
                 }
@@ -157,6 +169,24 @@ public class SlashCommandEventListener extends ListenerAdapter {
                     +"/startbg [game] - starts a thread for playing a board game\n"
                     +"/startrpg [game] - starts a thread for playing a ttrpg with\n").queue();
         }
+    }
+
+    /*
+     * handler for the joinasgm command
+     */
+    private void handleJoinAsGM(@NotNull SlashCommandInteractionEvent event){
+        //TODO: add functionality to join as the GM
+        //should only work in RPG threads
+        event.reply("work in progress").queue();
+    }
+
+    /*
+     * handler for the joinasplayer command
+     */
+    private void handleJoinAsPlayer(@NotNull SlashCommandInteractionEvent event){
+        //TODO: add functionality to join as player
+        //should only work in board game and RPG threads
+        event.reply("work in progress").queue();
     }
 
     /*
