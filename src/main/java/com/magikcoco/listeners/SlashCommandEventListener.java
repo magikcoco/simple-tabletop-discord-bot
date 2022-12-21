@@ -184,9 +184,45 @@ public class SlashCommandEventListener extends ListenerAdapter {
      * handler for the joinasplayer command
      */
     private void handleJoinAsPlayer(@NotNull SlashCommandInteractionEvent event){
-        //TODO: add functionality to join as player
+        //TODO: handle case where member is already a player or GM
         //should only work in board game and RPG threads
-        event.reply("work in progress").queue();
+        event.deferReply(true).queue();
+        try{
+            if(isBoardGameThread(event)){
+                for(BoardGameManager manager : dm.getActiveBoardGameMangers()){
+                    if(manager.getGameThread().equals(event.getChannel())){
+                        if(manager.addPlayer(event.getMember())){
+                            event.getChannel().asThreadChannel().addThreadMember(Objects.requireNonNull(event.getMember())).queue();
+                            event.getHook().sendMessage("You have been added to the game as a player").queue();
+                            lm.logInfo("Added member " + event.getMember().getEffectiveName() + " to thread " + event.getChannel().getName());
+                        } else {
+                            event.getHook().sendMessage("You were not added as a player because this game is already full").queue();
+                            lm.logInfo("Member " + Objects.requireNonNull(event.getMember()).getEffectiveName() + " was not added to thread " + event.getChannel().getName());
+                        }
+                        break;
+                    }
+                }
+            } else if(isRPGThread(event)){
+                for(RPGManager manager : dm.getActiveRPGMangers()){
+                    if(manager.getGameThread().equals(event.getChannel())){
+                        if(manager.addPlayer(event.getMember())){
+                            event.getChannel().asThreadChannel().addThreadMember(Objects.requireNonNull(event.getMember())).queue();
+                            event.getHook().sendMessage("You have been added to the game as a player").queue();
+                            lm.logInfo("Added member " + event.getMember().getEffectiveName() + " to thread " + event.getChannel().getName());
+                        } else {
+                            event.getHook().sendMessage("You were not added as a player because this game is already full").queue();
+                            lm.logInfo("Member " + Objects.requireNonNull(event.getMember()).getEffectiveName() + " was not added to thread " + event.getChannel().getName());
+                        }
+                        break;
+                    }
+                }
+            } else {
+                event.getHook().sendMessage("Command not supported in this location").queue();
+            }
+        } catch(NullPointerException e){
+            event.getHook().sendMessage("I didn't understand that").queue();
+        }
+
     }
 
     /*
@@ -229,7 +265,7 @@ public class SlashCommandEventListener extends ListenerAdapter {
                     //board game Risk
                     case "risk" -> event.reply("BG RISK 3-6").queue();
                     //in this case the board game is not supported
-                    default -> event.reply("Unrecognized Game: "
+                    default -> event.reply("Unrecognized game: "
                             + Objects.requireNonNull(event.getOption("game")).getAsString()
                             + "\n\nList of Supported Board Games:\n"
                             + "Chess(WIP)\n"
@@ -260,7 +296,7 @@ public class SlashCommandEventListener extends ListenerAdapter {
                     //ttrpg Shadowrun
                     case "shadowrun 5s" -> event.reply("RG SR5S").queue();
                     //in this case the game is unsupported
-                    default -> event.reply("Unrecognized Game: "
+                    default -> event.reply("Unrecognized game: "
                             + Objects.requireNonNull(event.getOption("game")).getAsString()
                             + "\n\nList of Supported Games:\n"
                             + "House Games(WIP)\n"
@@ -305,5 +341,23 @@ public class SlashCommandEventListener extends ListenerAdapter {
                 && !event.getChannelType().equals(ChannelType.GROUP)
                 && !event.getChannelType().equals(ChannelType.CATEGORY)
                 && !event.getChannelType().equals(ChannelType.UNKNOWN);
+    }
+
+    private boolean isRPGThread(@NotNull SlashCommandInteractionEvent event){
+        for(RPGManager manager : dm.getActiveRPGMangers()){
+            if(event.getChannel().equals(manager.getGameThread())){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isBoardGameThread(@NotNull SlashCommandInteractionEvent event){
+        for(BoardGameManager manager : dm.getActiveBoardGameMangers()){
+            if(event.getChannel().equals(manager.getGameThread())){
+                return true;
+            }
+        }
+        return false;
     }
 }

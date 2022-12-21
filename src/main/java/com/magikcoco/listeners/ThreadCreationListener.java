@@ -7,7 +7,6 @@ import net.dv8tion.jda.api.events.channel.ChannelCreateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import java.util.ArrayList;
 
 public class ThreadCreationListener extends ListenerAdapter {
 
@@ -42,10 +41,10 @@ public class ThreadCreationListener extends ListenerAdapter {
                     }
                 }
             } else if(event.getChannel().getName().contains("BG")){
-                dm.addActiveManager(new BoardGameManager(new ArrayList<>(),event.getChannel().asThreadChannel()));
+                dm.addActiveManager(new BoardGameManager(event.getChannel().asThreadChannel()));
                 return true;
             } else if(event.getChannel().getName().contains("RG")){
-                dm.addActiveManager(new RPGManager(new ArrayList<>(),event.getChannel().asThreadChannel()));
+                dm.addActiveManager(new RPGManager(event.getChannel().asThreadChannel()));
                 return true;
             }
         }
