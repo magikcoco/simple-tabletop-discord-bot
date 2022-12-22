@@ -133,7 +133,7 @@ public class SlashCommandEventListener extends ListenerAdapter {
         event.deferReply(true).queue(); //this response is an ephemeral message
         if(event.getChannelType().equals(ChannelType.GUILD_PUBLIC_THREAD)){
             for(ChargenManager manager : dm.getActiveChargenManagers()){
-                if(event.getChannel().equals(manager.getChargenThread())){
+                if(event.getChannel().equals(manager.getThread())){
                     event.getHook().sendMessage("Commands usable here:\n\n"
                             +"/ping - replies with pong\n"
                             +"/rename - renames the thread to the given name\n"
@@ -142,7 +142,7 @@ public class SlashCommandEventListener extends ListenerAdapter {
                 }
             }
             for(BoardGameManager manager : dm.getActiveBoardGameMangers()){
-                if(event.getChannel().equals(manager.getGameThread())){
+                if(event.getChannel().equals(manager.getThread())){
                     event.getHook().sendMessage("Commands usable here:\n\n"
                             +"/joinasplayer - join the current game in this thread as a player\n"
                             +"/ping - replies with pong\n"
@@ -152,7 +152,7 @@ public class SlashCommandEventListener extends ListenerAdapter {
                 }
             }
             for(RPGManager manager : dm.getActiveRPGMangers()){
-                if(event.getChannel().equals(manager.getGameThread())){
+                if(event.getChannel().equals(manager.getThread())){
                     event.getHook().sendMessage("Commands usable here:\n\n"
                             +"/joinasgm - join the current game in this thread as the gm\n"
                             +"/joinasplayer - join the current game in this thread as a player\n"
@@ -190,7 +190,7 @@ public class SlashCommandEventListener extends ListenerAdapter {
         try{
             if(isBoardGameThread(event)){
                 for(BoardGameManager manager : dm.getActiveBoardGameMangers()){
-                    if(manager.getGameThread().equals(event.getChannel())){
+                    if(manager.getThread().equals(event.getChannel())){
                         if(manager.addPlayer(event.getMember())){
                             event.getChannel().asThreadChannel().addThreadMember(Objects.requireNonNull(event.getMember())).queue();
                             event.getHook().sendMessage("You have been added to the game as a player").queue();
@@ -204,7 +204,7 @@ public class SlashCommandEventListener extends ListenerAdapter {
                 }
             } else if(isRPGThread(event)){
                 for(RPGManager manager : dm.getActiveRPGMangers()){
-                    if(manager.getGameThread().equals(event.getChannel())){
+                    if(manager.getThread().equals(event.getChannel())){
                         if(manager.addPlayer(event.getMember())){
                             event.getChannel().asThreadChannel().addThreadMember(Objects.requireNonNull(event.getMember())).queue();
                             event.getHook().sendMessage("You have been added to the game as a player").queue();
@@ -345,7 +345,7 @@ public class SlashCommandEventListener extends ListenerAdapter {
 
     private boolean isRPGThread(@NotNull SlashCommandInteractionEvent event){
         for(RPGManager manager : dm.getActiveRPGMangers()){
-            if(event.getChannel().equals(manager.getGameThread())){
+            if(event.getChannel().equals(manager.getThread())){
                 return true;
             }
         }
@@ -354,7 +354,7 @@ public class SlashCommandEventListener extends ListenerAdapter {
 
     private boolean isBoardGameThread(@NotNull SlashCommandInteractionEvent event){
         for(BoardGameManager manager : dm.getActiveBoardGameMangers()){
-            if(event.getChannel().equals(manager.getGameThread())){
+            if(event.getChannel().equals(manager.getThread())){
                 return true;
             }
         }

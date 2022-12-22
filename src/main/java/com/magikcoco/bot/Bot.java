@@ -1,9 +1,6 @@
 package com.magikcoco.bot;
 
-import com.magikcoco.listeners.SlashCommandEventListener;
-import com.magikcoco.listeners.TextMessageListener;
-import com.magikcoco.listeners.ThreadCreationListener;
-import com.magikcoco.listeners.ThreadDeletionListener;
+import com.magikcoco.listeners.*;
 import com.magikcoco.manager.LoggingManager;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -51,7 +48,6 @@ public class Bot {
      * @return the instance of this bot
      */
     public static Bot getInstance(){
-
         return BOT;
     }
 
@@ -110,7 +106,6 @@ public class Bot {
      * @return the name of the discord bot
      */
     public String getBotName(){
-
         return botName;
     }
 }

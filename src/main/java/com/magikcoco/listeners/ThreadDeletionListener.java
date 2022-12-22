@@ -28,21 +28,21 @@ public class ThreadDeletionListener extends ListenerAdapter {
     private boolean handleRemoveActiveThread(@NotNull ChannelDeleteEvent event){
         //chargen managers
         for(ChargenManager manager : dm.getActiveChargenManagers()){
-            if(event.getChannel().equals(manager.getChargenThread())){
+            if(event.getChannel().equals(manager.getThread())){
                 dm.removeActiveManager(manager);
                 return true;
             }
         }
         //board game managers
         for(BoardGameManager manager : dm.getActiveBoardGameMangers()){
-            if(event.getChannel().equals(manager.getGameThread())){
+            if(event.getChannel().equals(manager.getThread())){
                 dm.removeActiveManager(manager);
                 return true;
             }
         }
         //RPG managers
         for(RPGManager manager : dm.getActiveRPGMangers()){
-            if(event.getChannel().equals(manager.getGameThread())){
+            if(event.getChannel().equals(manager.getThread())){
                 dm.removeActiveManager(manager);
                 return true;
             }

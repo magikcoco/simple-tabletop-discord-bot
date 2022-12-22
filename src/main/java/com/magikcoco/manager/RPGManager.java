@@ -6,38 +6,53 @@ import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class RPGManager {
+public class RPGManager implements Manager{
 
     private LoggingManager lm = LoggingManager.getInstance();
     private Member[] players;
-    private Member gameMaster;
-    private ThreadChannel gameThread;
+    private ThreadChannel thread;
     private String gameCode;
     private Game game;
     private boolean autoGM;
 
-    public RPGManager(@NotNull ThreadChannel gameThread){
-        this.gameThread = gameThread;
+    public RPGManager(@NotNull ThreadChannel thread){
+        //set parameters
+        this.thread = thread;
+        //autoGM defaults to false
         autoGM = false;
-        gameCode = this.gameThread.getName().split(" ")[1];
+        //get the game code
+        gameCode = this.thread.getName().split(" ")[1];
+        //get the appropriate player array
         players = getPlayerArray();
         if(game == null){
-            gameThread.sendMessage("/help for RPG commands\nsomething went wrong, please set the game").queue();
+            //send message
+            thread.sendMessage("/help for RPG commands\nsomething went wrong, please set the game").queue();
+            //log error
             lm.logError("A problem occurred making RPGManager in thread '"
-                    +gameThread.getName()+"' for game code '"+gameCode+"'");
+                    + thread.getName()+"' for game code '"+gameCode+"'");
         } else {
-            gameMaster = null;
-            gameThread.sendMessage("/help for RPG commands").queue();
+            thread.sendMessage("/help for RPG commands").queue();
             lm.logInfo("New RPGManager in thread '"
-                    +this.gameThread.getName()
+                    +this.thread.getName()
                     +"' for game code '"+gameCode+"'");
         }
     }
 
+    @Override
+    public ThreadChannel getThread() {
+        return thread;
+    }
+
+    @Override
     public Member[] getPlayers(){
         return players;
     }
 
+    public Member getGameMaster(){
+        return players[0];
+    }
+
+    @Override
     public boolean addPlayer(Member newPlayer){
         int addIndex = -1;
         for(int i = 1; i < players.length; i++){
@@ -57,12 +72,37 @@ public class RPGManager {
     public boolean addGM(Member newGM){
         if(players[0] == null){
             players[0] = newGM;
-            lm.logInfo("Added "+newGM.getEffectiveName() + " as the GM in thread "+gameThread.getName());
+            lm.logInfo("Added "+newGM.getEffectiveName() + " as the GM in thread "+ thread.getName());
             return true;
         } else {
-            lm.logInfo("Did not add "+newGM.getEffectiveName()+" as the GM in thread "+gameThread.getName());
+            lm.logInfo("Did not add "+newGM.getEffectiveName()+" as the GM in thread "+ thread.getName());
             return false;
         }
+    }
+
+    @Override
+    public boolean removePlayer(Member player) {
+        for(int i = 1; i<players.length;i++){
+            if(players[i].equals(player)){
+                players[i] = null;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public Game getGame() {
+        return null;
+    }
+
+    @Override
+    public String getGameCode() {
+        return gameCode;
+    }
+
+    public boolean hasAutoGM(){
+        return autoGM;
     }
 
     @Nullable
@@ -83,18 +123,6 @@ public class RPGManager {
             default:
                 return null;
         }
-    }
-
-    public Member getGameMaster(){
-        return gameMaster;
-    }
-
-    public ThreadChannel getGameThread(){
-        return gameThread;
-    }
-
-    public boolean isAutoGM(){
-        return autoGM;
     }
 
     //TODO: complete TTRPG functionality
