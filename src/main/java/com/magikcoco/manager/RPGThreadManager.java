@@ -6,7 +6,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class RPGManager implements Manager{
+public class RPGThreadManager implements ThreadManager {
 
     private LoggingManager lm = LoggingManager.getInstance();
     private Member[] players;
@@ -15,7 +15,7 @@ public class RPGManager implements Manager{
     private Game game;
     private boolean autoGM;
 
-    public RPGManager(@NotNull ThreadChannel thread){
+    public RPGThreadManager(@NotNull ThreadChannel thread){
         //set parameters
         this.thread = thread;
         //autoGM defaults to false
@@ -28,11 +28,11 @@ public class RPGManager implements Manager{
             //send message
             thread.sendMessage("/help for RPG commands\nsomething went wrong, please set the game").queue();
             //log error
-            lm.logError("A problem occurred making RPGManager in thread '"
+            lm.logError("A problem occurred making RPGThreadManager in thread '"
                     + thread.getName()+"' for game code '"+gameCode+"'");
         } else {
             thread.sendMessage("/help for RPG commands").queue();
-            lm.logInfo("New RPGManager in thread '"
+            lm.logInfo("New RPGThreadManager in thread '"
                     +this.thread.getName()
                     +"' for game code '"+gameCode+"'");
         }
@@ -93,7 +93,7 @@ public class RPGManager implements Manager{
 
     @Override
     public Game getGame() {
-        return null;
+        return game;
     }
 
     @Override

@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class ChargenManager implements Manager{
+public class ChargenThreadManager implements ThreadManager {
 
     private LoggingManager lm = LoggingManager.getInstance();
     private Member player; //the person making the character
@@ -18,7 +18,7 @@ public class ChargenManager implements Manager{
     private String gameCode; //the game code
     private Game game; //the game object
 
-    public ChargenManager(Member player, @NotNull ThreadChannel thread){
+    public ChargenThreadManager(Member player, @NotNull ThreadChannel thread){
         //set passed parameters
         this.player = player;
         this.thread = thread;
@@ -30,7 +30,7 @@ public class ChargenManager implements Manager{
             //send a message in the thread
             thread.sendMessage("/help for chargen commands").queue();
             //log information
-            lm.logInfo("New Chargen Manager made in thread '"
+            lm.logInfo("New Chargen ThreadManager made in thread '"
                     +this.thread.getName()
                     +"' for user '"+this.player.getEffectiveName()
                     +"' and game code '"+ gameCode);
@@ -38,7 +38,7 @@ public class ChargenManager implements Manager{
             //send a message in the thread
             thread.sendMessage("/help for chargen commands\nSomething went wrong, please set the game").queue();
             //log information
-            lm.logError("New Chargen Manager made in thread '"
+            lm.logError("New Chargen ThreadManager made in thread '"
                     +this.thread.getName()
                     +"' for user '"+this.player.getEffectiveName()
                     +"' but the game has not been set");
@@ -87,18 +87,13 @@ public class ChargenManager implements Manager{
 
     @Nullable
     private Game setGame(){
-        switch(gameCode){
-            case "HGRR":
-                return HouseGamesRevisedRules.getGame();
-            case "PF1E":
-                return PathfinderFirstEdition.getGame();
-            case "PFSP":
-                return PathfinderSpheres.getGame();
-            case "SR5S":
-                return ShadowrunFifthSimplified.getGame();
-            default:
-                return null;
-        }
+        return switch (gameCode) {
+            case "HGRR" -> HouseGamesRevisedRules.getGame();
+            case "PF1E" -> PathfinderFirstEdition.getGame();
+            case "PFSP" -> PathfinderSpheres.getGame();
+            case "SR5S" -> ShadowrunFifthSimplified.getGame();
+            default -> null;
+        };
     }
     //TODO: complete chargen functionality
     //TODO: permanency for chargen managers

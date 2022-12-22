@@ -72,7 +72,7 @@ public class TextMessageListener extends ListenerAdapter {
                     //0 is thread type code
                     //1 is code for the game
                     //2 is the name of the char owner
-                    for(ChargenManager manager : dm.getActiveChargenManagers()){
+                    for(ThreadManager manager : dm.getActiveThreadManagers()){
                         if(manager.getPlayers()[0].getEffectiveName().equals(threadInfo[2]) && manager.getGameCode().equals(threadInfo[1])){
                             manager.getThread().sendMessage(Objects.requireNonNull(event.getMessage().getInteraction()).getUser().getAsMention()).queue();
                         }
@@ -116,7 +116,7 @@ public class TextMessageListener extends ListenerAdapter {
         //0 is thread type code
         //1 is code for the game
         //2 is the name of the char owner
-        for(ChargenManager manager : dm.getActiveChargenManagers()){
+        for(ThreadManager manager : dm.getActiveThreadManagers()){
             if(manager.getPlayers()[0].getEffectiveName().equals(threadInfo[2])
                     && manager.getGameCode().equals(threadInfo[1])){
                 return true;

@@ -26,22 +26,8 @@ public class ThreadDeletionListener extends ListenerAdapter {
      * searches active threads to find the deleted one, then returns true if found and deleted or false otherwise
      */
     private boolean handleRemoveActiveThread(@NotNull ChannelDeleteEvent event){
-        //chargen managers
-        for(ChargenManager manager : dm.getActiveChargenManagers()){
-            if(event.getChannel().equals(manager.getThread())){
-                dm.removeActiveManager(manager);
-                return true;
-            }
-        }
-        //board game managers
-        for(BoardGameManager manager : dm.getActiveBoardGameMangers()){
-            if(event.getChannel().equals(manager.getThread())){
-                dm.removeActiveManager(manager);
-                return true;
-            }
-        }
-        //RPG managers
-        for(RPGManager manager : dm.getActiveRPGMangers()){
+        //search all managers
+        for(ThreadManager manager : dm.getActiveThreadManagers()){
             if(event.getChannel().equals(manager.getThread())){
                 dm.removeActiveManager(manager);
                 return true;

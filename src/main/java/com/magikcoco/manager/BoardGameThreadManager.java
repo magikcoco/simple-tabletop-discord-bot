@@ -6,7 +6,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class BoardGameManager implements Manager{
+public class BoardGameThreadManager implements ThreadManager {
 
     private LoggingManager lm = LoggingManager.getInstance();
     private Member[] players; //the players for the game
@@ -14,7 +14,7 @@ public class BoardGameManager implements Manager{
     private String gameCode; //the game code
     private Game game; //the game object
 
-    public BoardGameManager(@NotNull ThreadChannel thread){
+    public BoardGameThreadManager(@NotNull ThreadChannel thread){
         //set passed parameters
         this.thread = thread;
         //get the game code
@@ -25,7 +25,7 @@ public class BoardGameManager implements Manager{
             //send a message
             thread.sendMessage("/help for game commands\nsomething went wrong, please set the game").queue();
             //log the error
-            lm.logError("A problem occurred making BoardGameManager in thread '"
+            lm.logError("A problem occurred making BoardGameThreadManager in thread '"
                     + thread.getName()+"' for game code '"+gameCode+"'");
         } else {
             //send a message

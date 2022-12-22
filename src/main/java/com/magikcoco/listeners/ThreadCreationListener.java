@@ -37,17 +37,17 @@ public class ThreadCreationListener extends ListenerAdapter {
                 for(Member member : event.getGuild().getMembers()){
                     if(event.getChannel().getName().split(" ")[2].equals(member.getEffectiveName())){
                         event.getChannel().asThreadChannel().addThreadMember(member).queue();
-                        dm.addActiveManager(new ChargenManager(member, event.getChannel().asThreadChannel()));
+                        dm.addActiveManager(new ChargenThreadManager(member, event.getChannel().asThreadChannel()));
                         return true;
                     }
                 }
             } else if(event.getChannel().getName().contains("BG")){
                 //board game thread
-                dm.addActiveManager(new BoardGameManager(event.getChannel().asThreadChannel()));
+                dm.addActiveManager(new BoardGameThreadManager(event.getChannel().asThreadChannel()));
                 return true;
             } else if(event.getChannel().getName().contains("RG")){
                 //rpg thread
-                dm.addActiveManager(new RPGManager(event.getChannel().asThreadChannel()));
+                dm.addActiveManager(new RPGThreadManager(event.getChannel().asThreadChannel()));
                 return true;
             }
         }
@@ -59,9 +59,9 @@ public class ThreadCreationListener extends ListenerAdapter {
      */
     private boolean threadStarted(@NotNull ChannelCreateEvent event){
             if (canSendMessagesInThread(event)) { //check if the bot can put messages in the thread
-                ChargenManager chargenManager = getIfChargenThread(event);
-                BoardGameManager boardGameManager = getIfBoardGameThread(event);
-                RPGManager rpgManager = getIfRPGThread(event);
+                ChargenThreadManager chargenManager = getIfChargenThread(event);
+                BoardGameThreadManager boardGameManager = getIfBoardGameThread(event);
+                RPGThreadManager rpgManager = getIfRPGThread(event);
                 if(!(chargenManager == null)) {
                     if(chargenManager.getThread().equals(event.getChannel().asThreadChannel())){
                         //add a member to the thread just created
@@ -100,10 +100,10 @@ public class ThreadCreationListener extends ListenerAdapter {
      * return the chargen manager for this thread, or null is there is none
      */
     @Nullable
-    private ChargenManager getIfChargenThread(@NotNull ChannelCreateEvent event){
-        for(ChargenManager manager : dm.getActiveChargenManagers()){
-            if(event.getChannel().equals(manager.getThread())){
-                return manager;
+    private ChargenThreadManager getIfChargenThread(@NotNull ChannelCreateEvent event){
+        for(ThreadManager manager : dm.getActiveThreadManagers()){
+            if(event.getChannel().equals(manager.getThread()) && manager.getClass().equals(ChargenThreadManager.class)){
+                return (ChargenThreadManager) manager;
             }
         }
         return null;
@@ -113,10 +113,10 @@ public class ThreadCreationListener extends ListenerAdapter {
      * return the board game manager for this thread, or null if there is none
      */
     @Nullable
-    private BoardGameManager getIfBoardGameThread(@NotNull ChannelCreateEvent event){
-        for(BoardGameManager manager : dm.getActiveBoardGameMangers()){
-            if(event.getChannel().equals(manager.getThread())){
-                return manager;
+    private BoardGameThreadManager getIfBoardGameThread(@NotNull ChannelCreateEvent event){
+        for(ThreadManager manager : dm.getActiveThreadManagers()){
+            if(event.getChannel().equals(manager.getThread()) && manager.getClass().equals(BoardGameThreadManager.class)){
+                return (BoardGameThreadManager) manager;
             }
         }
         return null;
@@ -126,10 +126,10 @@ public class ThreadCreationListener extends ListenerAdapter {
      * return the rpg manager for this thread, or null if there is none
      */
     @Nullable
-    private RPGManager getIfRPGThread(@NotNull ChannelCreateEvent event){
-        for(RPGManager manager : dm.getActiveRPGMangers()){
-            if(event.getChannel().equals(manager.getThread())){
-                return manager;
+    private RPGThreadManager getIfRPGThread(@NotNull ChannelCreateEvent event){
+        for(ThreadManager manager : dm.getActiveThreadManagers()){
+            if(event.getChannel().equals(manager.getThread()) && manager.getClass().equals(RPGThreadManager.class)){
+                return (RPGThreadManager) manager;
             }
         }
         return null;

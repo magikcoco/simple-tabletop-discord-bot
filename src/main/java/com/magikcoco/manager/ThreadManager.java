@@ -4,7 +4,7 @@ import com.magikcoco.game.Game;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 
-public interface Manager {
+public interface ThreadManager {
     ThreadChannel getThread();
     Member[] getPlayers();
     boolean addPlayer(Member player);
