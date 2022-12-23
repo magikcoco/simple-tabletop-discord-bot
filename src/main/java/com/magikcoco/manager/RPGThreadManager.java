@@ -1,6 +1,10 @@
 package com.magikcoco.manager;
 
-import com.magikcoco.game.*;
+import com.magikcoco.game.Game;
+import com.magikcoco.game.HouseGamesRevisedRules;
+import com.magikcoco.game.PathfinderFirstEdition;
+import com.magikcoco.game.PathfinderSpheres;
+import com.magikcoco.game.ShadowrunFifthSimplified;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import org.jetbrains.annotations.NotNull;

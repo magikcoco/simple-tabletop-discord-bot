@@ -1,6 +1,9 @@
 package com.magikcoco.manager;
 
-import com.magikcoco.game.*;
+import com.magikcoco.game.Chess;
+import com.magikcoco.game.Game;
+import com.magikcoco.game.LeavingEarth;
+import com.magikcoco.game.Risk;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import org.jetbrains.annotations.NotNull;

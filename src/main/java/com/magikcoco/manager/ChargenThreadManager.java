@@ -22,19 +22,13 @@ public class ChargenThreadManager implements ThreadManager {
         //set passed parameters
         this.player = player;
         this.thread = thread;
+        //add the player to the thread
+        thread.addThreadMember(player).queue();
         //get the game code
         gameCode = thread.getName().split(" ")[1];
         //set the game value
         game = setGame();
-        if (game != null) {
-            //send a message in the thread
-            thread.sendMessage("/help for chargen commands").queue();
-            //log information
-            lm.logInfo("New Chargen ThreadManager made in thread '"
-                    +this.thread.getName()
-                    +"' for user '"+this.player.getEffectiveName()
-                    +"' and game code '"+ gameCode);
-        } else {
+        if (game == null) {
             //send a message in the thread
             thread.sendMessage("/help for chargen commands\nSomething went wrong, please set the game").queue();
             //log information
@@ -42,6 +36,14 @@ public class ChargenThreadManager implements ThreadManager {
                     +this.thread.getName()
                     +"' for user '"+this.player.getEffectiveName()
                     +"' but the game has not been set");
+        } else {
+            //send a message in the thread
+            thread.sendMessage("/help for chargen commands").queue();
+            //log information
+            lm.logInfo("New Chargen ThreadManager made in thread '"
+                    +this.thread.getName()
+                    +"' for user '"+this.player.getEffectiveName()
+                    +"' and game code '"+ gameCode);
         }
     }
 

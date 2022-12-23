@@ -6,7 +6,6 @@ import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.events.channel.ChannelCreateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class ThreadCreationListener extends ListenerAdapter {
 
@@ -17,13 +16,8 @@ public class ThreadCreationListener extends ListenerAdapter {
     public void onChannelCreate(@NotNull ChannelCreateEvent event) {
         if(addActiveManager(event)){
             lm.logInfo("Created a new manager to handle the thread");
-            if(threadStarted(event)){
-                lm.logInfo("Successfully handled creation of thread called "+event.getChannel().getName());
-            } else {
-                lm.logInfo("Did not handle creation of thread called "+event.getChannel().getName());
-            }
         } else {
-            lm.logInfo("Error creating manager for channel "+event.getChannel().getName());
+            lm.logInfo("Error adding manager to channel "+event.getChannel().getName());
         }
     }
 
@@ -35,8 +29,8 @@ public class ThreadCreationListener extends ListenerAdapter {
             if(event.getChannel().getName().contains("CG")){
                 //chargen thread
                 for(Member member : event.getGuild().getMembers()){
+                    //need to find the correct member to pass to the chargenmanager
                     if(event.getChannel().getName().split(" ")[2].equals(member.getEffectiveName())){
-                        event.getChannel().asThreadChannel().addThreadMember(member).queue();
                         dm.addActiveManager(new ChargenThreadManager(member, event.getChannel().asThreadChannel()));
                         return true;
                     }
@@ -52,86 +46,5 @@ public class ThreadCreationListener extends ListenerAdapter {
             }
         }
         return false;
-    }
-
-    /*
-     * Handles sending a message inside a thread that was just created
-     */
-    private boolean threadStarted(@NotNull ChannelCreateEvent event){
-            if (canSendMessagesInThread(event)) { //check if the bot can put messages in the thread
-                ChargenThreadManager chargenManager = getIfChargenThread(event);
-                BoardGameThreadManager boardGameManager = getIfBoardGameThread(event);
-                RPGThreadManager rpgManager = getIfRPGThread(event);
-                if(!(chargenManager == null)) {
-                    if(chargenManager.getThread().equals(event.getChannel().asThreadChannel())){
-                        //add a member to the thread just created
-                        for (Member member : event.getGuild().getMembers()) {
-                            if (member.equals(chargenManager.getPlayers()[0])) {
-                                event.getChannel().asThreadChannel().addThreadMember(member).queue();
-                                return true;
-                            }
-                        }
-                    }
-                } else if(!(boardGameManager == null)) {
-                    if(boardGameManager.getThread().equals(event.getChannel().asThreadChannel())){
-                        event.getChannel().asThreadChannel().sendMessage("/help for game commands").queue();
-                        return true;
-                    }
-                } else if(!(rpgManager == null)) {
-                    if(rpgManager.getThread().equals(event.getChannel().asThreadChannel()))
-                    event.getChannel().asThreadChannel().sendMessage("/help for RPG commands").queue();
-                    return true;
-                }
-            }
-            return false;
-    }
-
-    /*
-     * checks if the thread a message just created can have messages sent by this bot
-     */
-    private boolean canSendMessagesInThread(@NotNull ChannelCreateEvent event){
-        return event.getChannelType().equals(ChannelType.GUILD_PUBLIC_THREAD)
-                && (event.getChannel().asThreadChannel().isJoined() //the thread is joined
-                && !event.getChannel().asThreadChannel().isLocked() //the thread is not locked
-                && !event.getChannel().asThreadChannel().isArchived()); //the thread is not archived
-    }
-
-    /*
-     * return the chargen manager for this thread, or null is there is none
-     */
-    @Nullable
-    private ChargenThreadManager getIfChargenThread(@NotNull ChannelCreateEvent event){
-        for(ThreadManager manager : dm.getActiveThreadManagers()){
-            if(event.getChannel().equals(manager.getThread()) && manager.getClass().equals(ChargenThreadManager.class)){
-                return (ChargenThreadManager) manager;
-            }
-        }
-        return null;
-    }
-
-    /*
-     * return the board game manager for this thread, or null if there is none
-     */
-    @Nullable
-    private BoardGameThreadManager getIfBoardGameThread(@NotNull ChannelCreateEvent event){
-        for(ThreadManager manager : dm.getActiveThreadManagers()){
-            if(event.getChannel().equals(manager.getThread()) && manager.getClass().equals(BoardGameThreadManager.class)){
-                return (BoardGameThreadManager) manager;
-            }
-        }
-        return null;
-    }
-
-    /*
-     * return the rpg manager for this thread, or null if there is none
-     */
-    @Nullable
-    private RPGThreadManager getIfRPGThread(@NotNull ChannelCreateEvent event){
-        for(ThreadManager manager : dm.getActiveThreadManagers()){
-            if(event.getChannel().equals(manager.getThread()) && manager.getClass().equals(RPGThreadManager.class)){
-                return (RPGThreadManager) manager;
-            }
-        }
-        return null;
     }
 }
