@@ -53,6 +53,9 @@ public class BoardGameThreadManager implements ThreadManager {
     public boolean addPlayer(Member newPlayer){
         int addIndex = -1;
         for(int i = 0; i < players.length; i++){
+            if(newPlayer.equals(players[i])){
+                return false;
+            }
             if(players[i] == null){
                 addIndex = i;
                 break;

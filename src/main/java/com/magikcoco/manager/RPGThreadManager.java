@@ -60,6 +60,9 @@ public class RPGThreadManager implements ThreadManager {
     public boolean addPlayer(Member newPlayer){
         int addIndex = -1;
         for(int i = 1; i < players.length; i++){
+            if(newPlayer.equals(players[i]) || newPlayer.equals(players[0])){
+                return false;
+            }
             if(players[i] == null){
                 addIndex = i;
                 break;
