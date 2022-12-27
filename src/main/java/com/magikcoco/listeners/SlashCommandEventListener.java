@@ -179,7 +179,26 @@ public class SlashCommandEventListener extends ListenerAdapter {
     private void handleJoinAsGM(@NotNull SlashCommandInteractionEvent event){
         //TODO: add functionality to join as the GM
         //should only work in RPG threads
-        event.reply("work in progress").queue();
+        event.deferReply(true).queue();
+        for(ThreadManager manager : dm.getActiveThreadManagers()){
+            if(event.getChannel().equals(manager.getThread())){
+                if(manager.getClass().equals(RPGThreadManager.class)){
+                    //RPG thread
+                    //safe cast, this can't happen unless the class is RPGThreadManager
+                    if(((RPGThreadManager) manager).addGM(event.getMember())){
+                        event.getChannel().asThreadChannel().addThreadMember(Objects.requireNonNull(event.getMember())).queue();
+                        event.getHook().sendMessage("You were added to the game as the GM").queue();
+                        lm.logInfo("Added "+event.getMember().getEffectiveName()+" to thread "+event.getChannel().getName());
+                    } else {
+                        event.getHook().sendMessage("You were not added to the game as the GM").queue();
+                        lm.logInfo("Did not add "+ Objects.requireNonNull(event.getMember()).getEffectiveName()+" to thread "+event.getChannel().getName());
+                    }
+                } else {
+                    //Any other thread
+                    event.getHook().sendMessage("Command not supported in this location").queue();
+                }
+            }
+        }
     }
 
     /*

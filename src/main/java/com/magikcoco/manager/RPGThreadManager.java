@@ -78,13 +78,21 @@ public class RPGThreadManager implements ThreadManager {
 
     public boolean addGM(Member newGM){
         if(players[0] == null){
-            players[0] = newGM;
-            lm.logInfo("Added "+newGM.getEffectiveName() + " as the GM in thread "+ thread.getName());
-            return true;
-        } else {
-            lm.logInfo("Did not add "+newGM.getEffectiveName()+" as the GM in thread "+ thread.getName());
-            return false;
+            boolean isPlayer = false;
+            for(int i = 1; i<players.length; i++){
+                if(newGM.equals(players[i])){
+                    isPlayer = true;
+                    break;
+                }
+            }
+            if(!isPlayer){
+                players[0] = newGM;
+                lm.logInfo("Added "+newGM.getEffectiveName() + " as the GM in thread "+ thread.getName());
+                return true;
+            }
         }
+        lm.logInfo("Did not add "+newGM.getEffectiveName()+" as the GM in thread "+ thread.getName());
+        return false;
     }
 
     @Override
