@@ -74,6 +74,9 @@ public class Bot {
                 //ping slash command, for testing purposes
                 Commands.slash("ping", "Pong!")
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND)),
+                //quit slash command, for leaving a game
+                Commands.slash("quit", "Quit the game in this thread")
+                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND)),
                 //rename slash command, for renaming threads
                 Commands.slash("rename", "Renames the current thread to the given name")
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND))

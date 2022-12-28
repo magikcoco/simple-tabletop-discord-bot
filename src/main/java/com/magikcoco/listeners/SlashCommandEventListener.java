@@ -74,6 +74,10 @@ public class SlashCommandEventListener extends ListenerAdapter {
                 //ping slash command, for testing purposes
                 handlePing(event);
                 break;
+            case "quit":
+                //ping slash command, for testing purposes
+                handleQuit(event);
+                break;
             case "rename":
                 //rename slash command, for renaming threads
                 handleRename(event);
@@ -131,45 +135,45 @@ public class SlashCommandEventListener extends ListenerAdapter {
      */
     private void handleHelp(@NotNull SlashCommandInteractionEvent event){
         event.deferReply(true).queue(); //this response is an ephemeral message
-        if(event.getChannelType().equals(ChannelType.GUILD_PUBLIC_THREAD)){
-            for(ThreadManager manager : dm.getActiveThreadManagers()){
-                if(event.getChannel().equals(manager.getThread())){
-                    if(manager.getClass().equals(ChargenThreadManager.class)){
-                        event.getHook().sendMessage("Commands usable here:\n\n"
-                                +"/help - print the available commands\n"
-                                +"/ping - replies with pong\n"
-                                +"/rename - renames the thread to the given name\n"
-                                +"other commands WIP\n").queue();
-                    } else if(manager.getClass().equals(BoardGameThreadManager.class)) {
-                        event.getHook().sendMessage("Commands usable here:\n\n"
-                                +"/help - print the available commands\n"
-                                +"/joinasplayer - join the current game in this thread as a player\n"
-                                +"/ping - replies with pong\n"
-                                +"/rename - renames the thread to the given name\n"
-                                +"other commands WIP\n").queue();
-                    } else if(manager.getClass().equals(RPGThreadManager.class)) {
-                        event.getHook().sendMessage("Commands usable here:\n\n"
-                                +"/help - print the available commands\n"
-                                +"/joinasgm - join the current game in this thread as the gm\n"
-                                +"/joinasplayer - join the current game in this thread as a player\n"
-                                +"/ping - replies with pong\n"
-                                +"/rename - renames the thread to the given name\n"
-                                +"other commands WIP\n").queue();
-                    } else {
-                        event.getHook().sendMessage("Commands usable here:\n\n"
-                                +"/help - print the available commands\n"
-                                +"/ping - replies with pong\n").queue();
-                    }
-                    return;
-                }
-            }
-        } else {
+        if(!event.getChannelType().equals(ChannelType.GUILD_PUBLIC_THREAD)){
             event.getHook().sendMessage("Commands usable here:\n\n"
                     +"/help - print the available commands\n"
                     +"/ping - replies with pong\n"
                     +"/chargen [game] - starts a thread to create a character for the specified game\n"
                     +"/startbg [game] - starts a thread for playing a board game\n"
                     +"/startrpg [game] - starts a thread for playing a ttrpg with\n").queue();
+            return;
+        }
+        for(ThreadManager manager : dm.getActiveThreadManagers()){
+            if(event.getChannel().equals(manager.getThread())){
+                if(manager.getClass().equals(ChargenThreadManager.class)){
+                    event.getHook().sendMessage("Commands usable here:\n\n"
+                            +"/help - print the available commands\n"
+                            +"/ping - replies with pong\n"
+                            +"/rename - renames the thread to the given name\n"
+                            +"other commands WIP\n").queue();
+                    return;
+                } else if(manager.getClass().equals(BoardGameThreadManager.class)) {
+                    event.getHook().sendMessage("Commands usable here:\n\n"
+                            +"/help - print the available commands\n"
+                            +"/joinasplayer - join the current game in this thread as a player\n"
+                            +"/ping - replies with pong\n"
+                            +"/quit - removes you from the game\n"
+                            +"/rename - renames the thread to the given name\n"
+                            +"other commands WIP\n").queue();
+                    return;
+                } else if(manager.getClass().equals(RPGThreadManager.class)) {
+                    event.getHook().sendMessage("Commands usable here:\n\n"
+                            +"/help - print the available commands\n"
+                            +"/joinasgm - join the current game in this thread as the gm\n"
+                            +"/joinasplayer - join the current game in this thread as a player\n"
+                            +"/ping - replies with pong\n"
+                            +"/quit - removes you from the game\n"
+                            +"/rename - renames the thread to the given name\n"
+                            +"other commands WIP\n").queue();
+                    return;
+                }
+            }
         }
     }
 
@@ -177,9 +181,12 @@ public class SlashCommandEventListener extends ListenerAdapter {
      * handler for the joinasgm command
      */
     private void handleJoinAsGM(@NotNull SlashCommandInteractionEvent event){
-        //TODO: add functionality to join as the GM
         //should only work in RPG threads
         event.deferReply(true).queue();
+        if(!event.getChannelType().equals(ChannelType.GUILD_PUBLIC_THREAD)){
+            event.getHook().sendMessage("Command not supported in this location").queue();
+            return;
+        }
         for(ThreadManager manager : dm.getActiveThreadManagers()){
             if(event.getChannel().equals(manager.getThread())){
                 if(manager.getClass().equals(RPGThreadManager.class)){
@@ -207,6 +214,10 @@ public class SlashCommandEventListener extends ListenerAdapter {
     private void handleJoinAsPlayer(@NotNull SlashCommandInteractionEvent event){
         //should only work in board game and RPG threads
         event.deferReply(true).queue();
+        if(!event.getChannelType().equals(ChannelType.GUILD_PUBLIC_THREAD)){
+            event.getHook().sendMessage("Command not supported in this location").queue();
+            return;
+        }
         for(ThreadManager manager : dm.getActiveThreadManagers()){
             if(event.getChannel().equals(manager.getThread())){
                 //if the current channel is equal to the managed thread
@@ -242,6 +253,56 @@ public class SlashCommandEventListener extends ListenerAdapter {
     private void handlePing(@NotNull SlashCommandInteractionEvent event){
         //just a ping command
         event.reply("pong").setEphemeral(true).queue();
+    }
+
+    private void handleQuit(@NotNull SlashCommandInteractionEvent event) {
+        event.deferReply(true).queue();
+        if(!event.getChannelType().equals(ChannelType.GUILD_PUBLIC_THREAD)){
+            event.getHook().sendMessage("Command not supported in this location").queue();
+            return;
+        }
+        try {
+            for (ThreadManager manager : dm.getActiveThreadManagers()) {
+                if (event.getChannel().equals(manager.getThread())) {
+                    if (manager.getClass().equals(BoardGameThreadManager.class)) {
+                        //board game thread
+                        if (manager.removePlayer(event.getMember())) {
+                            event.getChannel().asThreadChannel().removeThreadMember(Objects.requireNonNull(event.getMember())).queue();
+                            event.getHook().sendMessage("You were removed from this game").queue();
+                            lm.logInfo("Removed " + event.getMember().getEffectiveName() + " from " + event.getChannel().getName());
+                            return;
+                        } else {
+                            event.getHook().sendMessage("You were not removed from this game").queue();
+                            lm.logInfo("Did not remove " + Objects.requireNonNull(event.getMember()).getEffectiveName() + " from " + event.getChannel().getName());
+                            return;
+                        }
+                    } else if (manager.getClass().equals(RPGThreadManager.class)) {
+                        //RPG thread
+                        if (((RPGThreadManager) manager).removeGM(Objects.requireNonNull(event.getMember()))) {
+                            event.getChannel().asThreadChannel().removeThreadMember(event.getMember()).queue();
+                            event.getHook().sendMessage("You were removed from this game as GM").queue();
+                            lm.logInfo("Removed " + event.getMember().getEffectiveName() + " from " + event.getChannel().getName());
+                            return;
+                        } else if (manager.removePlayer(event.getMember())) {
+                            event.getChannel().asThreadChannel().removeThreadMember(event.getMember()).queue();
+                            event.getHook().sendMessage("You were removed from this game as a player").queue();
+                            lm.logInfo("Removed " + event.getMember().getEffectiveName() + " from " + event.getChannel().getName());
+                            return;
+                        } else {
+                            event.getHook().sendMessage("You were not removed from this game").queue();
+                            lm.logInfo("Did not remove " + event.getMember().getEffectiveName() + " from " + event.getChannel().getName());
+                            return;
+                        }
+                    } else {
+                        event.getHook().sendMessage("Command not supported in this location").queue();
+                        return;
+                    }
+                }
+            }
+        } catch (Exception e){
+            event.getHook().sendMessage("I didn't understand that").queue();
+            lm.logError("There was an error handling quit:\n"+e.toString());
+        }
     }
 
     private void handleRename(@NotNull SlashCommandInteractionEvent event){

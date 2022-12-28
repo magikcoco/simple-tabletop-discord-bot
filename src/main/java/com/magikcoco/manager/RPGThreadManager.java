@@ -98,10 +98,20 @@ public class RPGThreadManager implements ThreadManager {
     @Override
     public boolean removePlayer(Member player) {
         for(int i = 1; i<players.length;i++){
-            if(players[i].equals(player)){
-                players[i] = null;
-                return true;
+            if(players[i] != null){
+                if(players[i].equals(player)){
+                    players[i] = null;
+                    return true;
+                }
             }
+        }
+        return false;
+    }
+
+    public boolean removeGM(Member gm){
+        if(gm.equals(players[0])){
+            players[0] = null;
+            return true;
         }
         return false;
     }

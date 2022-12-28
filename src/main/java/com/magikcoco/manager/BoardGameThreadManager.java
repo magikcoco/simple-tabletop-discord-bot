@@ -72,9 +72,11 @@ public class BoardGameThreadManager implements ThreadManager {
     @Override
     public boolean removePlayer(Member player) {
         for(int i = 0; i<players.length;i++){
-            if(players[i].equals(player)){
-                players[i] = null;
-                return true;
+            if(players[i] != null){
+                if(players[i].equals(player)){
+                    players[i] = null;
+                    return true;
+                }
             }
         }
         return false;
