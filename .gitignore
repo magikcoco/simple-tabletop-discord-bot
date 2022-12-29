@@ -3,3 +3,4 @@
 /.idea/
 /out/
 /src/main/resources/bot-token.config
+/simple-tabletop-bot.properties

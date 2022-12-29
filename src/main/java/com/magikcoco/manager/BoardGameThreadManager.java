@@ -110,5 +110,4 @@ public class BoardGameThreadManager implements ThreadManager {
     }
 
     //TODO: complete board game functionality
-    //TODO: permanency for board game managers
 }
