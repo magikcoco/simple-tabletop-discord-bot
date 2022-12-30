@@ -98,4 +98,5 @@ public class ChargenThreadManager implements ThreadManager {
         };
     }
     //TODO: complete chargen functionality
+    //TODO: permanency for chargen managers
 }

@@ -1,16 +1,13 @@
 package com.magikcoco.main;
 
 import com.magikcoco.bot.Bot;
-import com.magikcoco.manager.DataManager;
 import com.magikcoco.manager.LoggingManager;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
 
     private static LoggingManager lm = LoggingManager.getInstance();
-    private static DataManager dm = DataManager.getInstance();
 
     public static void main(String[] args) {
         lm.logInfo("Application Start");
@@ -53,11 +50,6 @@ public class Main {
     private static void handleExitCommand(){
         //exit handler
         lm.logInfo("Exit command called, shutting down");
-        try {
-            dm.getProperties().store(new FileOutputStream("simple-tabletop-bot.properties"), "---no comment---");
-        } catch (Exception e) {
-            lm.logError("Couldn't save properties on exit:\n"+e.toString());
-        }
         System.exit(0);
     }
 

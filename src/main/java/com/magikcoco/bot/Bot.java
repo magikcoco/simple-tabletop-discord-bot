@@ -6,8 +6,6 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
@@ -112,13 +110,5 @@ public class Bot {
      */
     public String getBotName(){
         return botName;
-    }
-
-    public ThreadChannel getThreadByID(String id){
-        return jda.getThreadChannelById(id);
-    }
-
-    public User getUserByID(String id){
-        return jda.retrieveUserById(id).complete();
     }
 }

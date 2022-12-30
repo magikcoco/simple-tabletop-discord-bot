@@ -27,7 +27,6 @@ public class LoggingManager {
                 LOGGER.log(Level.INFO, "Using existing log file");
             }
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Critical error occurred creating the LoggingManager");
             System.exit(2);
         }
     }

@@ -1,4 +1,5 @@
 package com.magikcoco.manager;
+
 import com.magikcoco.game.Game;
 import com.magikcoco.game.HouseGamesRevisedRules;
 import com.magikcoco.game.PathfinderFirstEdition;
@@ -9,13 +10,9 @@ import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-
 public class RPGThreadManager implements ThreadManager {
 
     private LoggingManager lm = LoggingManager.getInstance();
-    private DataManager dm = DataManager.getInstance();
     private Member[] players;
     private ThreadChannel thread;
     private String gameCode;
@@ -90,14 +87,6 @@ public class RPGThreadManager implements ThreadManager {
             }
             if(!isPlayer){
                 players[0] = newGM;
-                try {
-                    FileOutputStream out = new FileOutputStream("simple-tabletop-bot.properties");
-                    dm.getProperties().setProperty(thread.getId(),players[0].getId());
-                    dm.getProperties().store(out, "---added gm---");
-                    out.close();
-                } catch (IOException e) {
-                    lm.logError("Failed to add new gm for " + thread.getName() + " into properties");
-                }
                 lm.logInfo("Added "+newGM.getEffectiveName() + " as the GM in thread "+ thread.getName());
                 return true;
             }
@@ -119,7 +108,7 @@ public class RPGThreadManager implements ThreadManager {
         return false;
     }
 
-    public boolean removeGM(@NotNull Member gm){
+    public boolean removeGM(Member gm){
         if(gm.equals(players[0])){
             players[0] = null;
             return true;
@@ -162,4 +151,5 @@ public class RPGThreadManager implements ThreadManager {
     }
 
     //TODO: complete TTRPG functionality
+    //TODO: permanency for RPG managers
 }
