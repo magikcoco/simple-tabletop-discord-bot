@@ -1,6 +1,7 @@
 package com.magikcoco.listeners;
 
 import com.magikcoco.manager.*;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -59,6 +60,9 @@ public class SlashCommandEventListener extends ListenerAdapter {
             case "chargen":
                 //chargen slash command, used to initiate character creation process
                 handleChargen(event);
+                break;
+            case "endgame":
+                handleEndGame(event);
                 break;
             case "help":
                 //help slash command, for explaining purposes
@@ -130,6 +134,46 @@ public class SlashCommandEventListener extends ListenerAdapter {
         }
     }
 
+    private void handleEndGame(@NotNull SlashCommandInteractionEvent event) {
+        event.deferReply(true).queue();
+        if(!event.getChannelType().equals(ChannelType.GUILD_PUBLIC_THREAD)){
+            event.getHook().sendMessage("Command not supported in this location").queue();
+            return;
+        }
+        try{
+            for(ThreadManager threadManager : dm.getActiveThreadManagers()){
+                if(event.getChannel().equals(threadManager.getThread())){
+                    if(threadManager.getClass().equals(RPGThreadManager.class)){
+                        if(Objects.equals(event.getMember(), ((RPGThreadManager) threadManager).getGameMaster())){
+                            event.getHook().sendMessage("Game is over").queue();
+                            threadManager.getThread().sendMessage("Game Over").queue();
+                            threadManager.getThread().getManager().setLocked(true).queue();
+                            dm.removeActiveManager(threadManager);
+                        } else {
+                            event.getHook().sendMessage("You need to be the GM to use that command here").queue();
+                        }
+                        return;
+                    } else if(threadManager.getClass().equals(BoardGameThreadManager.class)){
+                        for(Member player : threadManager.getPlayers()){
+                            if(Objects.equals(event.getMember(), player)){
+                                event.getHook().sendMessage("Game is over").queue();
+                                threadManager.getThread().sendMessage("Game Over").queue();
+                                threadManager.getThread().getManager().setLocked(true).queue();
+                                dm.removeActiveManager(threadManager);
+                                return;
+                            }
+                        } event.getHook().sendMessage("You need to be a player to end the game").queue();
+                    } else {
+                        event.getHook().sendMessage("Command not supported in this location").queue();
+                        return;
+                    }
+                }
+            }
+        } catch(Exception e){
+            event.getHook().sendMessage("I didn't understand that command").queue();
+        }
+    }
+
     /*
      * handler for help command, replies with list of commands
      */
@@ -196,16 +240,20 @@ public class SlashCommandEventListener extends ListenerAdapter {
                         event.getChannel().asThreadChannel().addThreadMember(Objects.requireNonNull(event.getMember())).queue();
                         event.getHook().sendMessage("You were added to the game as the GM").queue();
                         lm.logInfo("Added "+event.getMember().getEffectiveName()+" to thread "+event.getChannel().getName());
+                        return;
                     } else {
                         event.getHook().sendMessage("You were not added to the game as the GM").queue();
                         lm.logInfo("Did not add "+ Objects.requireNonNull(event.getMember()).getEffectiveName()+" to thread "+event.getChannel().getName());
+                        return;
                     }
                 } else {
                     //Any other thread
                     event.getHook().sendMessage("Command not supported in this location").queue();
+                    return;
                 }
             }
         }
+        event.getHook().sendMessage("Command not supported in this location").queue();
     }
 
     /*
@@ -231,6 +279,7 @@ public class SlashCommandEventListener extends ListenerAdapter {
                         event.getHook().sendMessage("You were not added to the game as a player").queue();
                         lm.logInfo("Did not add "+ Objects.requireNonNull(event.getMember()).getEffectiveName()+" to thread "+event.getChannel().getName());
                     }
+                    return;
                 } else if(manager.getClass().equals(RPGThreadManager.class)){
                     if(manager.addPlayer(event.getMember())){
                         event.getChannel().asThreadChannel().addThreadMember(Objects.requireNonNull(event.getMember())).queue();
@@ -240,11 +289,14 @@ public class SlashCommandEventListener extends ListenerAdapter {
                         event.getHook().sendMessage("You were not added as a player").queue();
                         lm.logInfo("Did not add " + Objects.requireNonNull(event.getMember()).getEffectiveName() + " to thread " + event.getChannel().getName());
                     }
+                    return;
                 } else {
                     event.getHook().sendMessage("Command not supported in this location").queue();
+                    return;
                 }
             }
         }
+        event.getHook().sendMessage("Command not supported in this location").queue();
     }
 
     /*

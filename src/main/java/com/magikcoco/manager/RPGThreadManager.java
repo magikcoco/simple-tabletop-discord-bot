@@ -108,7 +108,7 @@ public class RPGThreadManager implements ThreadManager {
         return false;
     }
 
-    public boolean removeGM(Member gm){
+    public boolean removeGM(@NotNull Member gm){
         if(gm.equals(players[0])){
             players[0] = null;
             return true;
@@ -151,5 +151,4 @@ public class RPGThreadManager implements ThreadManager {
     }
 
     //TODO: complete TTRPG functionality
-    //TODO: permanency for RPG managers
 }

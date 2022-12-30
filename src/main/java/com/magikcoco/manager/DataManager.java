@@ -30,5 +30,5 @@ public class DataManager {
         return activeThreadManagers;
     }
 
-    //TODO: permanency for data manager
+    //TODO: convert to using a database to avoid losing data on restart
 }

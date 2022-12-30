@@ -62,6 +62,8 @@ public class Bot {
                 Commands.slash("chargen","Create a character for the specified game")
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND))
                         .addOption(OptionType.STRING, "game", "The TTRPG to create a character sheet for",true,true),
+                Commands.slash("endgame", "Ends the current game, if you are a participant in it")
+                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND)),
                 //help slash command, for displaying available commands
                 Commands.slash("help", "Get help with all the commands from this bot")
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND)),
