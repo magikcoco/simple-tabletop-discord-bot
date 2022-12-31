@@ -7,10 +7,14 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import org.jetbrains.annotations.NotNull;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class SlashCommandEventListener extends ListenerAdapter {
@@ -85,6 +89,10 @@ public class SlashCommandEventListener extends ListenerAdapter {
             case "rename":
                 //rename slash command, for renaming threads
                 handleRename(event);
+                break;
+            case "roll":
+                //rename slash command, for renaming threads
+                handleRoll(event);
                 break;
             case "startbg":
                 //startbg slash command, used to initiate a board game
@@ -373,6 +381,76 @@ public class SlashCommandEventListener extends ListenerAdapter {
         } catch(Exception e) {
             event.getHook().sendMessage("I didn't understand that command").queue();
         }
+    }
+
+    /*
+     * roll some dice
+     */
+    private void handleRoll(@NotNull SlashCommandInteractionEvent event) {
+        event.deferReply().queue(); //not ephemeral, response should be public
+        try{
+            int numDice = Objects.requireNonNull(event.getOption("dice")).getAsInt();
+            int numSide = Objects.requireNonNull(event.getOption("side")).getAsInt();
+            int[] rolls = new int[numDice];
+            for(int i = 0; i < numDice; i++){
+                //generate a random number from 1 to the number of sides (+1 for inclusive)
+                rolls[i] = ThreadLocalRandom.current().nextInt(1,numSide+1);
+            }
+            int countAbove = event.getOption("count", 0, OptionMapping::getAsInt);
+            if(event.getOption("sum", false, OptionMapping::getAsBoolean)){
+                //reply with sum
+                event.getHook().sendMessage("The sum of the roll is: "+IntStream.of(rolls).sum()).queue();
+            } else if(event.getOption("mean", false, OptionMapping::getAsBoolean)) {
+                //reply with mean
+                event.getHook().sendMessage("The mean of the roll is: "+IntStream.of(rolls).average().toString().substring(14)).queue();
+            } else if(event.getOption("median", false, OptionMapping::getAsBoolean)) {
+                //reply with median
+                Arrays.sort(rolls);
+                if (rolls.length % 2 == 0) {
+                    event.getHook().sendMessage("The median of the roll is: " + rolls[rolls.length/2] + " and " + rolls[(rolls.length/2)-1]).queue();
+                } else {
+                    event.getHook().sendMessage("The median of the roll is: " + rolls[rolls.length/2]).queue();
+                }
+            } else if(event.getOption("mode", false, OptionMapping::getAsBoolean)) {
+                //reply with mode
+                //counting sort since its unlikely that N will ever be large
+                int[] count = new int[numSide+1];
+                //noinspection ForLoopReplaceableByForEach
+                for(int i = 0; i<rolls.length; i++){
+                    count[rolls[i]]++;
+                }
+                int index = count.length-1;
+                for(int i=count.length-2; i>-1; i--){
+                    if(count[i] >= count[index]){
+                        index = i;
+                    }
+                }
+                event.getHook().sendMessage("The mode of the roll is: " + index).queue();
+            } else if(event.getOption("range", false, OptionMapping::getAsBoolean)) {
+                //reply with range
+                int max = numDice*numSide;
+                event.getHook().sendMessage("The possible range of the roll is: "+ numDice +"-"+max).queue();
+            } else if(countAbove > 0) {
+                //reply with a count of rolls with numbers above countAbove
+                //counting sort since its unlikely that N will ever be large
+                int[] count = new int[numSide+1];
+                //noinspection ForLoopReplaceableByForEach
+                for(int i = 0; i<rolls.length; i++){
+                    if(rolls[i] > countAbove){
+                        count[rolls[i]]++;
+                    }
+                }
+                event.getHook().sendMessage(IntStream.of(count).sum()+" dice rolled above "+countAbove).queue();
+            } else {
+                //no special option was selected
+                event.getHook().sendMessage("You rolled: " + Arrays.toString(rolls)).queue();
+            }
+            lm.logInfo("I rolled "+numDice+"d"+numSide+" in "+event.getChannel().getName());
+        } catch(Exception e){
+            event.getHook().sendMessage("Something went wrong, I didn't understand the command").queue();
+            lm.logError("I failed to roll dice in "+event.getChannel().getName()+"\n"+e.toString());
+        }
+
     }
 
     /*

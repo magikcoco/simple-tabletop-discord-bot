@@ -83,6 +83,17 @@ public class Bot {
                 Commands.slash("rename", "Renames the current thread to the given name")
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND))
                         .addOption(OptionType.STRING, "name", "The new name for this thread", true),
+                //ping slash command, for testing purposes
+                Commands.slash("roll", "Roll some dice!")
+                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND))
+                        .addOption(OptionType.INTEGER, "dice", "the number of dice to roll (the X in Xd6)",true)
+                        .addOption(OptionType.INTEGER, "side", "how many sides on each die (the X in 6dX)",true)
+                        .addOption(OptionType.BOOLEAN, "sum", "take the sum of the roll")
+                        .addOption(OptionType.BOOLEAN, "mean", "take the mean of the roll")
+                        .addOption(OptionType.BOOLEAN, "median", "take the median of the roll")
+                        .addOption(OptionType.BOOLEAN, "mode", "take the mode of the roll")
+                        .addOption(OptionType.BOOLEAN, "range", "take the possible range of the roll")
+                        .addOption(OptionType.INTEGER, "count", "count how many rolls are greater than this number"),
                 //startbg slash command, used to initiate a board game
                 Commands.slash("startbg","Start a play-by-post board game")
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_SEND))
