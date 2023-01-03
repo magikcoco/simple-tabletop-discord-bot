@@ -2,6 +2,7 @@ package com.magikcoco.listeners;
 
 import com.magikcoco.bot.Bot;
 import com.magikcoco.manager.*;
+import com.magikcoco.manager.thread.ThreadManager;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;

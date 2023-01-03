@@ -1,6 +1,9 @@
 package com.magikcoco.listeners;
 
 import com.magikcoco.manager.*;
+import com.magikcoco.manager.thread.BoardGameThreadManager;
+import com.magikcoco.manager.thread.ChargenThreadManager;
+import com.magikcoco.manager.thread.RPGThreadManager;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.events.channel.ChannelCreateEvent;
