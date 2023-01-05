@@ -55,6 +55,14 @@ public class DataManager {
         managedThreads.updateOne(Filters.eq("thread-id",threadID), Updates.set("players", playerIDs));
     }
 
+    public void updateGMInThreadDocument(String threadID, Member gm){
+        if(gm != null){
+            managedThreads.updateOne(Filters.eq("thread-id",threadID), Updates.set("gm", gm.getId()));
+        } else {
+            managedThreads.updateOne(Filters.eq("thread-id",threadID), Updates.set("gm", null));
+        }
+    }
+
     public List<ThreadManager> getActiveThreadManagers(){
         return activeThreadManagers;
     }
