@@ -1,31 +1,32 @@
 package com.magikcoco.manager.thread;
 
 import com.magikcoco.game.*;
+import com.magikcoco.manager.DataManager;
 import com.magikcoco.manager.LoggingManager;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
-import org.bson.Document;
 
 public abstract class ThreadManager {
 
     protected LoggingManager lm = LoggingManager.getInstance();
+    protected DataManager dm = DataManager.getInstance();
     protected Member[] players = null; //the players for the game
     protected String gameCode = null; //the game code
     protected Game game = null; //the game object
     protected ThreadChannel thread = null; //the thread being managed
-    protected Document document = null; //the mongodb document associated with this manager
 
     public boolean addPlayer(Member player){
         int addIndex = -1;
         for(int i = 0; i<players.length; i++){
-            if(players[i].equals(player)){
-                return false;
-            } else if (players[i] == null){
+            if (players[i] == null){
                 addIndex = i;
+            } else if(players[i].equals(player)){
+                return false;
             }
         }
         if(addIndex > -1){
             players[addIndex] = player;
+            dm.updatePlayersInThreadDocument(thread.getId(), players);
             return true;
         } else {
             return false;
@@ -34,9 +35,12 @@ public abstract class ThreadManager {
 
     public boolean removePlayer(Member player){
         for(int i = 0; i < players.length; i++){
-            if(players[i].equals(player)){
-                players[i] = null;
-                return true;
+            if(players[i] != null){
+                if(players[i].equals(player)){
+                    players[i] = null;
+                    dm.updatePlayersInThreadDocument(thread.getId(), players);
+                    return true;
+                }
             }
         }
         return false;

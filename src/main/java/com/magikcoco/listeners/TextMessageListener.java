@@ -74,8 +74,10 @@ public class TextMessageListener extends ListenerAdapter {
                     //1 is code for the game
                     //2 is the name of the char owner
                     for(ThreadManager manager : dm.getActiveThreadManagers()){
-                        if(manager.getPlayers()[0].getEffectiveName().equals(threadInfo[2]) && manager.getGameCode().equals(threadInfo[1])){
-                            manager.getThread().sendMessage(Objects.requireNonNull(event.getMessage().getInteraction()).getUser().getAsMention()).queue();
+                        if(manager.getPlayers()[0] != null){
+                            if(manager.getPlayers()[0].getEffectiveName().equals(threadInfo[2]) && manager.getGameCode().equals(threadInfo[1])){
+                                manager.getThread().sendMessage(Objects.requireNonNull(event.getMessage().getInteraction()).getUser().getAsMention()).queue();
+                            }
                         }
                     }
                 } else {
@@ -118,9 +120,11 @@ public class TextMessageListener extends ListenerAdapter {
         //1 is code for the game
         //2 is the name of the char owner
         for(ThreadManager manager : dm.getActiveThreadManagers()){
-            if(manager.getPlayers()[0].getEffectiveName().equals(threadInfo[2])
-                    && manager.getGameCode().equals(threadInfo[1])){
-                return true;
+            if(manager.getPlayers()[0] != null){
+                if(manager.getPlayers()[0].getEffectiveName().equals(threadInfo[2])
+                        && manager.getGameCode().equals(threadInfo[1])){
+                    return true;
+                }
             }
         }
         return false;

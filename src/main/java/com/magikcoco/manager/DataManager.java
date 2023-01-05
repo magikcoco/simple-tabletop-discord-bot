@@ -6,7 +6,11 @@ import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
+import net.dv8tion.jda.api.entities.Member;
 import org.bson.Document;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +45,16 @@ public class DataManager {
         managedThreads.deleteOne(Filters.eq("thread-id",manager.getThread().getId()));
     }
 
+    public void updatePlayersInThreadDocument(String threadID, @NotNull Member[] players){
+        List<String> playerIDs = new ArrayList<>();
+        for(Member member : players){
+            if(member != null){
+                playerIDs.add(member.getId());
+            }
+        }
+        managedThreads.updateOne(Filters.eq("thread-id",threadID), Updates.set("players", playerIDs));
+    }
+
     public List<ThreadManager> getActiveThreadManagers(){
         return activeThreadManagers;
     }
@@ -49,5 +63,5 @@ public class DataManager {
         return INSTANCE;
     }
 
-    //TODO: convert to using a database to avoid losing data on restart
+    //TODO: load data from database on restart
 }
