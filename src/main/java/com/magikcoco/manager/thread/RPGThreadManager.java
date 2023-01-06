@@ -31,7 +31,7 @@ public class RPGThreadManager extends ThreadManager {
     public boolean addGM(Member newGM){
         if(gameMaster == null){
             gameMaster = newGM;
-            //TODO: add gm to database document
+            dm.updateGMInThreadDocument(thread.getId(), gameMaster);
             return true;
         }
         return false;
@@ -44,7 +44,7 @@ public class RPGThreadManager extends ThreadManager {
     public boolean removeGM(@NotNull Member gm){
         if(gm.equals(gameMaster)){
             gameMaster = null;
-            //TODO: remove gm from database document
+            dm.updateGMInThreadDocument(thread.getId(), gameMaster);
             return true;
         }
         return false;
