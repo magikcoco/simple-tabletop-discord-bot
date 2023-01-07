@@ -33,6 +33,26 @@ public abstract class ThreadManager {
         }
     }
 
+    public boolean addPlayer(Member player, boolean updateDatabase){
+        int addIndex = -1;
+        for(int i = 0; i<players.length; i++){
+            if (players[i] == null){
+                addIndex = i;
+            } else if(players[i].equals(player)){
+                return false;
+            }
+        }
+        if(addIndex > -1){
+            players[addIndex] = player;
+            if(updateDatabase){
+                dm.updatePlayersInThreadDocument(thread.getId(), players);
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public boolean removePlayer(Member player){
         for(int i = 0; i < players.length; i++){
             if(players[i] != null){

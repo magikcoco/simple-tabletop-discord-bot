@@ -548,4 +548,6 @@ public class SlashCommandEventListener extends ListenerAdapter {
                 && !event.getChannelType().equals(ChannelType.CATEGORY)
                 && !event.getChannelType().equals(ChannelType.UNKNOWN);
     }
+
+    //TODO: fix bug where you can join as player and as GM in rpg threads
 }

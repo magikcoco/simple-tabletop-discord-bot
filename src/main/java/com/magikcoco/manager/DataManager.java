@@ -1,8 +1,11 @@
 package com.magikcoco.manager;
 
+
+import com.magikcoco.manager.thread.ChargenThreadManager;
 import com.magikcoco.manager.thread.ThreadManager;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
@@ -10,8 +13,8 @@ import com.mongodb.client.model.Updates;
 import net.dv8tion.jda.api.entities.Member;
 import org.bson.Document;
 import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class DataManager {
@@ -28,6 +31,9 @@ public class DataManager {
         mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017")); //default config for mongoserver
         mongoDatabase = mongoClient.getDatabase("simple-tabletop-bot-data");
         managedThreads = mongoDatabase.getCollection("managed-threads");
+        if(!getDataFromDatabase()){
+            System.exit(9001);
+        }
     }
 
     public void addActiveManager(ThreadManager manager){
@@ -38,6 +44,9 @@ public class DataManager {
                 .append("players",null)
                 .append("gm",null);
         managedThreads.insertOne(managedThread);
+        if(manager.getClass().equals(ChargenThreadManager.class)){
+            manager.addPlayer(((ChargenThreadManager) manager).getPlayer());
+        }
     }
 
     public void removeActiveManager(ThreadManager manager){
@@ -71,5 +80,18 @@ public class DataManager {
         return INSTANCE;
     }
 
-    //TODO: load data from database on restart
+    private boolean getDataFromDatabase(){
+        System.out.println("Getting from database");
+        FindIterable<Document> iterableDocuments = managedThreads.find();
+        for (Document document : iterableDocuments) {
+            System.out.println("data exists");
+            String threadID = (String) document.get("thread-id"); //this should always be a string
+            String managerType = (String) document.get("manager-type"); //this should also always be a string
+            //this is always going to be a list of strings
+            @SuppressWarnings("unchecked") ArrayList<String> playerIDs = (ArrayList<String>) document.get("players");
+            String gmID = (String) document.get("gm");
+            //TODO: load data from database on restart
+        }
+        return true;
+    }
 }
