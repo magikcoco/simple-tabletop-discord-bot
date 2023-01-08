@@ -17,6 +17,11 @@ public abstract class ThreadManager {
 
     public boolean addPlayer(Member player){
         int addIndex = -1;
+        if(this.getClass() == RPGThreadManager.class){
+            if(player.equals(((RPGThreadManager) this).getGameMaster())){
+                return false;
+            }
+        }
         for(int i = 0; i<players.length; i++){
             if (players[i] == null){
                 addIndex = i;

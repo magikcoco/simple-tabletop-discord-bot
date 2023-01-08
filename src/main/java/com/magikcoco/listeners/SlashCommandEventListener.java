@@ -252,12 +252,11 @@ public class SlashCommandEventListener extends ListenerAdapter {
                         event.getChannel().asThreadChannel().addThreadMember(Objects.requireNonNull(event.getMember())).queue();
                         event.getHook().sendMessage("You were added to the game as the GM").queue();
                         lm.logInfo("Added "+event.getMember().getEffectiveName()+" to thread "+event.getChannel().getName());
-                        return;
                     } else {
                         event.getHook().sendMessage("You were not added to the game as the GM").queue();
                         lm.logInfo("Did not add "+ Objects.requireNonNull(event.getMember()).getEffectiveName()+" to thread "+event.getChannel().getName());
-                        return;
                     }
+                    return;
                 } else {
                     //Any other thread
                     event.getHook().sendMessage("Command not supported in this location").queue();
@@ -548,6 +547,4 @@ public class SlashCommandEventListener extends ListenerAdapter {
                 && !event.getChannelType().equals(ChannelType.CATEGORY)
                 && !event.getChannelType().equals(ChannelType.UNKNOWN);
     }
-
-    //TODO: fix bug where you can join as player and as GM in rpg threads
 }

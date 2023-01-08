@@ -30,6 +30,13 @@ public class RPGThreadManager extends ThreadManager {
 
     public boolean addGM(Member newGM){
         if(gameMaster == null){
+            for (Member player : players) {
+                if (player != null) {
+                    if (player.equals(newGM)) {
+                        return false;
+                    }
+                }
+            }
             gameMaster = newGM;
             dm.updateGMInThreadDocument(thread.getId(), gameMaster);
             return true;
